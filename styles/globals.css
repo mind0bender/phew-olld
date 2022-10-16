@@ -1,26 +1,29 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer components {
+  .command {
+    @apply text-gray-200 whitespace-pre-wrap break-all;
   }
-  body {
-    color: white;
-    background: black;
+  .prompt {
+    @apply text-white;
+  }
+  .caret-focus {
+    @apply px-[4px] h-4 backdrop-invert;
+    animation: blink 1.5s step-end infinite;
+  }
+  .caret-blur {
+    @apply border px-[3px] h-4;
+  }
+}
+
+@keyframes blink {
+  from,
+  to {
+    @apply backdrop-invert;
+  }
+  50% {
+    @apply backdrop-invert-0;
   }
 }
