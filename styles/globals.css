@@ -2,19 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  .scrollbar-code::-webkit-scrollbar {
+    @apply w-2 rounded-br;
+  }
+
+  .scrollbar-code::-webkit-scrollbar-track {
+    @apply bg-slate-800 rounded-br;
+  }
+
+  .scrollbar-code::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-br;
+  }
+
+  .scrollbar-code::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-600 rounded-br;
+  }
+}
+
 @layer components {
   .command {
-    @apply text-gray-200 whitespace-pre-wrap break-all;
+    @apply text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500;
   }
   .prompt {
-    @apply text-white;
+    @apply text-emerald-100;
+    text-shadow: 0 2px 6px #0ff;
+  }
+  .caret {
+    @apply px-1 h-4 mt-1;
   }
   .caret-focus {
-    @apply px-[4px] h-4 backdrop-invert;
+    @apply backdrop-invert;
     animation: blink 1.5s step-end infinite;
   }
   .caret-blur {
-    @apply border px-[3px] h-4;
+    @apply border;
   }
 }
 
