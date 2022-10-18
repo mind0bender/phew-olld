@@ -26,7 +26,8 @@
   }
   .prompt {
     @apply text-emerald-100;
-    text-shadow: 0 0 2px #0ff;
+    text-shadow: 0 0 2px #0dd;
+    letter-spacing: 0.5px;
   }
   .caret {
     @apply px-1 h-4 mt-1;

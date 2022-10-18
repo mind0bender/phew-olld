@@ -18,8 +18,8 @@ const commands: CommandData[] = [
     desc: "print the content of a file",
   },
   {
-    command: "getfooled",
-    desc: "you say I can't make a fool out of you?",
+    command: "getcool",
+    desc: "wanna be like the cool guy?",
   },
   {
     command: "signup",

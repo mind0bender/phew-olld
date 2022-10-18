@@ -26,8 +26,10 @@ const Home: NextPage = () => {
     name: "mind0bender",
   });
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [caretPosition, setCaretPosition] = useState<number>(command.length);
+  const [caretPosition, setCaretPosition] = useState<number>(0);
   const [path, setPath] = useState("~");
+  const [prevCommands, setPrevCommands] = useState<string[]>([]);
+  const [prevCommandsIdx, setPrevCommandsIdx] = useState<number>(-1);
 
   const [output, setOutput] = useState<ReactNode[]>([
     "Welcome to PHEW",
@@ -47,12 +49,21 @@ const Home: NextPage = () => {
     };
   }, []);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     caret.current?.scrollIntoView({
-      behavior: "smooth",
+      behavior: "auto",
     });
-    return () => {};
+    return (): void => {};
   }, [output]);
+
+  useEffect(() => {
+    if (prevCommandsIdx == -1) {
+      setCommand("");
+    } else if (prevCommands[prevCommandsIdx]) {
+      setCommand(prevCommands[prevCommandsIdx]);
+    }
+    return () => {};
+  }, [prevCommandsIdx, prevCommands]);
 
   const keyUpCaptureHandler: KeyboardEventHandler<HTMLInputElement> = (
     e: KeyboardEvent<HTMLInputElement>
@@ -66,16 +77,34 @@ const Home: NextPage = () => {
     if (e.key === "Enter") {
       const out: ReactNode = runCommand(`phew@${user.name}:${path}$`, command);
       if (out) {
-        console.log([...output, out]);
         setOutput((po: ReactNode[]): ReactNode[] => [...po, out]);
       } else {
         setOutput([]);
       }
-      setCommand("");
+      setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (prevCommandsIdx !== 0) {
+        setPrevCommandsIdx((pci: number): number => {
+          if (pci == -1) {
+            return prevCommands.length - 1;
+          }
+          return pci - 1;
+        });
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (prevCommandsIdx !== -1 && prevCommandsIdx < prevCommands.length - 1) {
+        setPrevCommandsIdx((pci: number): number => {
+          return pci + 1;
+        });
+      }
+      if (prevCommandsIdx == prevCommands.length - 1) {
+        setPrevCommandsIdx(-1);
+      }
     } else {
-      caret.current?.scrollIntoView({
-        behavior: "smooth",
-      });
+      setPrevCommandsIdx(-1);
     }
   };
 
