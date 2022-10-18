@@ -3,8 +3,13 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import {
   ChangeEvent,
+  ChangeEventHandler,
+  FocusEvent,
+  FocusEventHandler,
   KeyboardEvent,
+  KeyboardEventHandler,
   MutableRefObject,
+  ReactNode,
   useEffect,
   useRef,
   useState,
@@ -12,8 +17,11 @@ import {
 import runCommand from "../helpers/commands";
 
 const Home: NextPage = () => {
-  const [command, setCommand] = useState<string>(".help"); //pink
-  const cmdInp: MutableRefObject<null | HTMLInputElement> = useRef(null);
+  const [command, setCommand] = useState<string>("help"); //pink
+  const cmdInp: MutableRefObject<null | HTMLInputElement> =
+    useRef<null | HTMLInputElement>(null);
+  const caret: MutableRefObject<null | HTMLSpanElement> =
+    useRef<null | HTMLSpanElement>(null);
   const [user, setUser] = useState({
     name: "mind0bender",
   });
@@ -21,16 +29,16 @@ const Home: NextPage = () => {
   const [caretPosition, setCaretPosition] = useState<number>(command.length);
   const [path, setPath] = useState("~");
 
-  const [output, setOutput] = useState<string[]>([
+  const [output, setOutput] = useState<ReactNode[]>([
     "Welcome to PHEW",
-    "Type `.help` for more info\n\n",
+    "Type `.help` for more info\n",
   ]);
 
   useEffect((): (() => void) => {
     setIsFocused(document.hasFocus());
     cmdInp.current?.focus();
     setIsFocused(document.hasFocus());
-    const onblur = () => {
+    const onblur: () => void = (): void => {
       setIsFocused(document.hasFocus());
     };
     window.addEventListener("blur", onblur);
@@ -39,25 +47,52 @@ const Home: NextPage = () => {
     };
   }, []);
 
-  // const runCommand: () => void = (): void => {
-  //   let cmd: string = command.trim() || `echo "lol'`; //pink
-  //   if (cmd.startsWith("echo ")) {
-  //     cmd = cmd.substring(5);
-  //     if (cmd.startsWith('"') && cmd.endsWith('"')) {
-  //       cmd = cmd.substring(1, cmd.length - 1);
-  //     }
-  //     if (cmd.startsWith("'") && cmd.endsWith("'")) {
-  //       cmd = cmd.substring(1, cmd.length - 1);
-  //     }
-  //     setOutput((po: string[]): string[] => [
-  //       ...po,
-  //       `phew@${user.name}:${path}$ ${command}`,
-  //       cmd,
-  //     ]);
-  //     setCommand("");
-  //     setCaretPosition(0);
-  //   }
-  // };
+  useEffect(() => {
+    caret.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+    return () => {};
+  }, [output]);
+
+  const keyUpCaptureHandler: KeyboardEventHandler<HTMLInputElement> = (
+    e: KeyboardEvent<HTMLInputElement>
+  ): void => {
+    setCaretPosition(cmdInp.current?.selectionEnd || 0);
+  };
+
+  const keyDownHandler: KeyboardEventHandler<HTMLInputElement> = (
+    e: KeyboardEvent<HTMLInputElement>
+  ): void => {
+    if (e.key === "Enter") {
+      const out: ReactNode = runCommand(`phew@${user.name}:${path}$`, command);
+      if (out) {
+        console.log([...output, out]);
+        setOutput((po: ReactNode[]): ReactNode[] => [...po, out]);
+      } else {
+        setOutput([]);
+      }
+      setCommand("");
+    } else {
+      caret.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const focusChangeHandler: FocusEventHandler<HTMLInputElement> = (
+    e: FocusEvent<HTMLInputElement>
+  ) => {
+    const selectedText: string | undefined = window.getSelection()?.toString();
+    if (!selectedText) {
+      setIsFocused(document.activeElement == cmdInp.current);
+    }
+  };
+
+  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (
+    e: ChangeEvent<HTMLInputElement>
+  ): void => {
+    setCommand(e.target.value);
+  };
 
   return (
     <>
@@ -84,49 +119,19 @@ const Home: NextPage = () => {
         <label htmlFor="cmdinp" className="flex grow">
           <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar-code rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
             <input
-              // autoFocus
               id="cmdinp"
               ref={cmdInp}
-              onKeyUpCapture={(e: KeyboardEvent<HTMLInputElement>): void => {
-                setCaretPosition(cmdInp.current?.selectionEnd || 0);
-              }}
-              onKeyDown={(e: KeyboardEvent<HTMLInputElement>): void => {
-                if (e.key === "Enter") {
-                  const out: string[] | false = runCommand(
-                    `phew@${user.name}:${path}$`,
-                    command
-                  );
-                  if (out) {
-                    console.log([...output, ...out]);
-                    setOutput((po: string[]): string[] => [...po, ...out]);
-                  }
-                }
-              }}
-              onFocus={(e) => {
-                const selectedText: string | undefined = window
-                  .getSelection()
-                  ?.toString();
-                if (!selectedText) {
-                  setIsFocused(document.activeElement == cmdInp.current);
-                }
-              }}
-              onBlur={() => {
-                const selectedText: string | undefined = window
-                  .getSelection()
-                  ?.toString();
-                if (!selectedText) {
-                  setIsFocused(document.activeElement == cmdInp.current);
-                }
-              }}
+              onKeyUpCapture={keyUpCaptureHandler}
+              onKeyDown={keyDownHandler}
+              onFocus={focusChangeHandler}
+              onBlur={focusChangeHandler}
               className="bg-transparent opacity-0 full -translate-x-[99999rem] -z-10 absolute outline-none border-none"
               type="text"
               value={command}
-              onChange={(e: ChangeEvent<HTMLInputElement>): void => {
-                setCommand(e.target.value);
-              }}
+              onChange={onChangeHandler}
             />
             <div className="command flex flex-col gap-1">
-              {output.map((line: string, idx) => {
+              {output.map((line: ReactNode, idx) => {
                 return (
                   <div className="command" key={idx}>
                     {line}
@@ -142,6 +147,7 @@ const Home: NextPage = () => {
               <div className="flex">
                 <span className="command">{command}</span>
                 <span
+                  ref={caret}
                   style={{
                     top: "1px",
                     right: `${(command.length - caretPosition) * 8.75}px`,
