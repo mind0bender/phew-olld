@@ -5,7 +5,9 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: { blink: "blink 1.5s step-end infinite" },
+    },
   },
   plugins: [],
 };

@@ -3,50 +3,31 @@
 @tailwind utilities;
 
 @layer base {
-  .scrollbar-code::-webkit-scrollbar {
+  .scrollbar::-webkit-scrollbar {
     @apply w-2 rounded-br;
   }
 
-  .scrollbar-code::-webkit-scrollbar-track {
+  .scrollbar::-webkit-scrollbar-track {
     @apply bg-slate-800 rounded-br;
   }
 
-  .scrollbar-code::-webkit-scrollbar-thumb {
+  .scrollbar::-webkit-scrollbar-thumb {
     @apply bg-slate-700 rounded-br;
   }
 
-  .scrollbar-code::-webkit-scrollbar-thumb:hover {
+  .scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-slate-600 rounded-br;
   }
 }
 
-@layer components {
-  .command {
-    @apply text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500;
-  }
-  .prompt {
-    @apply text-emerald-100;
-    text-shadow: 0 0 2px #0dd;
-    letter-spacing: 0.5px;
-  }
-  .caret {
-    @apply px-1 h-4 mt-1;
-  }
-  .caret-focus {
-    @apply backdrop-invert;
-    animation: blink 1.5s step-end infinite;
-  }
-  .caret-blur {
-    @apply border;
-  }
-}
-
 @keyframes blink {
-  from,
+  from {
+    @apply bg-white text-black;
+  }
   to {
-    @apply backdrop-invert;
+    @apply bg-white text-black;
   }
   50% {
-    @apply backdrop-invert-0;
+    @apply bg-transparent text-gray-200;
   }
 }

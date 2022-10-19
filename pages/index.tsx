@@ -32,8 +32,24 @@ const Home: NextPage = () => {
   const [prevCommandsIdx, setPrevCommandsIdx] = useState<number>(-1);
 
   const [output, setOutput] = useState<ReactNode[]>([
-    "Welcome to PHEW",
-    "Type `.help` for more info\n",
+    <div key={-1}>
+      <div>
+        Welcome to <span className="text-emerald-300">PHEW</span>
+      </div>
+      <div>
+        Type{" "}
+        <span
+          onClick={() => {
+            setCommand("help");
+            setCaretPosition(4);
+          }}
+          className="text-amber-300 underline hover:bg-slate-800 hover:ring ring-slate-800 shadow-sm cursor-pointer rounded-sm px-1 py-0.5 duration-100"
+        >
+          help
+        </span>{" "}
+        for more info
+      </div>
+    </div>,
   ]);
 
   useEffect((): (() => void) => {
@@ -146,7 +162,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <label htmlFor="cmdinp" className="flex grow">
-          <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar-code rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
+          <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
             <input
               id="cmdinp"
               ref={cmdInp}
@@ -159,32 +175,42 @@ const Home: NextPage = () => {
               value={command}
               onChange={onChangeHandler}
             />
-            <div className="command flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
               {output.map((line: ReactNode, idx) => {
                 return (
-                  <div className="command" key={idx}>
+                  <div
+                    className="text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500 selection:text-slate-900"
+                    key={idx}
+                  >
                     {line}
                     <br />
                   </div>
                 );
               })}
             </div>
-            <div className="flex gap-2 items-baseline">
-              <div className="prompt">
+            <div className="flex gap-2 max-h-fit items-baseline">
+              <div className="text-emerald-300 max-h-fit">
                 phew@{user.name}:{path}$
               </div>
-              <div className="flex">
-                <span className="command">{command}</span>
+              <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500 selection:text-slate-900">
+                {Array.from(command.slice(0, caretPosition)).map(
+                  (char: string, idx: number) => (
+                    <span key={idx}>{char}</span>
+                  )
+                )}
                 <span
                   ref={caret}
-                  style={{
-                    top: "1px",
-                    right: `${(command.length - caretPosition) * 8.75}px`,
-                  }}
-                  className={`caret relative ${
-                    isFocused ? "caret-focus" : "caret-blur"
+                  className={`h-5 text-gray-200 selection:border-0 border-white border ${
+                    isFocused && "animate-blink"
                   }`}
-                />
+                >
+                  {command[caretPosition] || " "}
+                </span>
+                {Array.from(command.slice(caretPosition + 1)).map(
+                  (char: string, idx: number) => (
+                    <span key={idx}>{char}</span>
+                  )
+                )}
               </div>
             </div>
           </div>
