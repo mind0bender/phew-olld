@@ -1,28 +1,71 @@
-import React, { ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
 
-function Banner() {
+const Banner: FC = () => {
   return (
-    <div className="sm:text-xs text-[7px] italic select:font-bold cursor-zoom-in">
-      {Array.from(
-        `/*********  /****  /****  /********   /****       /****
-  /**   /**   /**    /**    /**         /**   /**   /**
-   /******     /*********    /****       /**  /****  /**
-    /**         /**    /**    /**          /****  /****
-    /****       /****  /****  /*******     /****** /******`
-      ).map((char: string, idx: number): ReactNode => {
-        return (
-          <span
-            className={`hover:scale-105 duration-100 ${
-              char !== " " && "underline"
-            }`}
-            key={idx}
-          >
-            {char}
-          </span>
-        );
-      })}
-    </div>
+    <span className="flex gap-2 sm:text-xs text-[7px] italic select:font-bold cursor-zoom-in">
+      <BannerLetter
+        letter={`/*********
+  /**   /**
+   /******
+    /**
+    /****`}
+      />
+      <BannerLetter
+        letter={`/****  /****
+ /**    /**
+  /*********
+   /**    /**
+   /****  /****`}
+      />
+      <BannerLetter
+        letter={`/********
+  /**
+   /****
+    /**
+   /*******`}
+      />
+      <BannerLetter
+        letter={`/****       /****
+  /**   /**   /**
+   /**  /****  /**
+     /****  /****
+    /****** /******`}
+      />
+    </span>
   );
+};
+
+interface BannerLetterData {
+  letter: string;
 }
+
+const BannerLetter: FC<BannerLetterData> = ({ letter }: BannerLetterData) => {
+  return (
+    <span>
+      {[...Array.from(letter.split("\n"))].map(
+        (line: string, idx1: number): ReactNode => {
+          return (
+            <div key={idx1}>
+              {[...Array.from(line)].map(
+                (char: string, idx2: number): ReactNode => {
+                  return (
+                    <span
+                      className={`transform -translate-y-10 ${
+                        char !== " " && "underline"
+                      }`}
+                      key={idx2}
+                    >
+                      {char}
+                    </span>
+                  );
+                }
+              )}
+            </div>
+          );
+        }
+      )}
+    </span>
+  );
+};
 
 export default Banner;
