@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import Banner from "../components/banner";
 import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Output from "../components/output";
@@ -13,6 +14,9 @@ const runCommand: (prompt: string, command: string) => ReactNode = (
   }
   if (cmd.startsWith("help")) {
     return <Output prompt={prompt} command={command} output={<Help />} />;
+  }
+  if (cmd.startsWith("banner")) {
+    return <Output prompt={prompt} command={command} output={<Banner />} />;
   }
   if (cmd.startsWith("clear")) {
     return clear();

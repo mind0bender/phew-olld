@@ -97,7 +97,16 @@ const Home: NextPage = () => {
       } else {
         setOutput([]);
       }
-      setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
+      if (prevCommandsIdx === -1) {
+        setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
+      } else {
+        setPrevCommandsIdx(-1);
+      }
+      return;
+    }
+    if ((e.ctrlKey && e.key === "l") || (e.key === "L" && !e.shiftKey)) {
+      e.preventDefault();
+      setOutput([]);
     }
     if (e.key === "ArrowUp") {
       e.preventDefault();
@@ -109,19 +118,18 @@ const Home: NextPage = () => {
           return pci - 1;
         });
       }
-    } else if (e.key === "ArrowDown") {
+    } else if (
+      e.key === "ArrowDown" &&
+      !(prevCommandsIdx == prevCommands.length - 1)
+    ) {
       e.preventDefault();
-      if (prevCommandsIdx !== -1 && prevCommandsIdx < prevCommands.length - 1) {
+      if (prevCommandsIdx < prevCommands.length - 1) {
         setPrevCommandsIdx((pci: number): number => {
           return pci + 1;
         });
       }
-      if (prevCommandsIdx == prevCommands.length - 1) {
-        setPrevCommandsIdx(-1);
-      }
-    } else {
-      setPrevCommandsIdx(-1);
     }
+    console.log(/^.$/u.test(e.key));
   };
 
   const focusChangeHandler: FocusEventHandler<HTMLInputElement> = (
