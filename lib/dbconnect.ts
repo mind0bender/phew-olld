@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 const { MONGODB_USER, MONGODB_PSWD } = process.env;
 if (!(MONGODB_USER && MONGODB_PSWD)) {
+  console.log(process.env);
   throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
+    "Please define the MONGODB_USER & MONGODB_PSWD environment variable inside .env.local"
   );
 }
 const MONGODB_URI: string = `mongodb+srv://${MONGODB_USER}:${MONGODB_PSWD}@mycluster.sxsst.mongodb.net/?retryWrites=true&w=majority`;
