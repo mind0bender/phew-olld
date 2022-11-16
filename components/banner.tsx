@@ -2,33 +2,33 @@ import React, { FC, ReactNode } from "react";
 
 const Banner: FC = () => {
   return (
-    <span className="flex gap-2 sm:text-xs text-[7px] italic select:font-bold cursor-zoom-in">
+    <span className="flex gap-1 sm:text-xs text-[7px] italic select:font-bold">
       <BannerLetter
-        letter={`/*********
+        letter={`/********* 
   /**   /**
-   /******
-    /**
-    /****`}
+   /****** 
+    /**    
+    /****  `}
       />
       <BannerLetter
-        letter={`/****  /****
- /**    /**
-  /*********
-   /**    /**
+        letter={`/****  /****   
+ /**    /**    
+  /*********   
+   /**    /**  
    /****  /****`}
       />
       <BannerLetter
-        letter={`/********
-  /**
-   /****
-    /**
+        letter={`/********  
+  /**      
+   /****   
+    /**    
    /*******`}
       />
       <BannerLetter
-        letter={`/****       /****
-  /**   /**   /**
-   /**  /****  /**
-     /****  /****
+        letter={`/****       /****  
+  /**   /**   /**  
+   /**  /****  /** 
+     /****  /****  
     /****** /******`}
       />
     </span>
@@ -50,9 +50,7 @@ const BannerLetter: FC<BannerLetterData> = ({ letter }: BannerLetterData) => {
                 (char: string, idx2: number): ReactNode => {
                   return (
                     <span
-                      className={`transform -translate-y-10 ${
-                        char !== " " && "underline"
-                      }`}
+                      className={`${char !== " " && "underline"}`}
                       key={idx2}
                     >
                       {char}

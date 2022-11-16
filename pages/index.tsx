@@ -16,21 +16,26 @@ import {
 } from "react";
 import Greeting from "../components/greeting";
 import runCommand from "../helpers/commands";
+import { ShareableUser } from "../helpers/shareableModel";
 
 const Home: NextPage = () => {
-  const [command, setCommand] = useState<string>("help"); //pink
-  const cmdInp: MutableRefObject<null | HTMLInputElement> =
-    useRef<null | HTMLInputElement>(null);
-  const caret: MutableRefObject<null | HTMLSpanElement> =
-    useRef<null | HTMLSpanElement>(null);
-  const [user, setUser] = useState({
-    name: "mind0bender",
-  });
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [command, setCommand] = useState<string>("");
+  const cmdInp: MutableRefObject<HTMLInputElement | null> =
+    useRef<HTMLInputElement | null>(null);
+  const caret: MutableRefObject<HTMLSpanElement | null> =
+    useRef<HTMLSpanElement | null>(null);
   const [caretPosition, setCaretPosition] = useState<number>(0);
-  const [path, setPath] = useState("~");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
   const [prevCommands, setPrevCommands] = useState<string[]>([]);
   const [prevCommandsIdx, setPrevCommandsIdx] = useState<number>(-1);
+
+  const [path, setPath] = useState("~");
+
+  const [user, setUser] = useState<ShareableUser>({
+    username: "stem",
+    email: "",
+  });
 
   const [output, setOutput] = useState<ReactNode[]>([
     <Greeting
@@ -79,17 +84,27 @@ const Home: NextPage = () => {
     e: KeyboardEvent<HTMLInputElement>
   ): void => {
     if (e.key === "Enter") {
-      const out: ReactNode = runCommand(`phew@${user.name}:${path}$`, command);
-      if (out) {
-        setOutput((po: ReactNode[]): ReactNode[] => [...po, out]);
-      } else {
-        setOutput([]);
-      }
-      if (prevCommandsIdx === -1) {
-        setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
-      } else {
-        setPrevCommandsIdx(-1);
-      }
+      runCommand(`phew@${user.username}:${path}$`, command)
+        .then((out: ReactNode) => {
+          setOutput((po: ReactNode[]): ReactNode[] => [...po, out]);
+        })
+        .catch(({ clear, err }: { clear: boolean; err?: any }) => {
+          if (clear) {
+            setOutput([]);
+          } else {
+            // display the err pink;
+            console.log(err);
+            setOutput((po: ReactNode[]): ReactNode[] => [...po, err]);
+          }
+        })
+        .finally(() => {
+          if (command !== prevCommands[prevCommands.length - 1]) {
+            setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
+          }
+          if (prevCommandsIdx !== -1) {
+            setPrevCommandsIdx(-1);
+          }
+        });
       return;
     }
     if ((e.ctrlKey && e.key === "l") || (e.key === "L" && !e.shiftKey)) {
@@ -117,7 +132,6 @@ const Home: NextPage = () => {
         });
       }
     }
-    console.log(/^.$/u.test(e.key));
   };
 
   const focusChangeHandler: FocusEventHandler<HTMLInputElement> = (
@@ -138,9 +152,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>
-          {user.name}:{path}
-        </title>
+        <title>{`${user.username}:${path}`}</title>
       </Head>
       <div className="flex flex-col w-full h-screen p-2 bg-slate-900 font-extralight font-mono">
         <div className="flex justify-between rounded-t-md">
@@ -175,20 +187,19 @@ const Home: NextPage = () => {
               {output.map((line: ReactNode, idx) => {
                 return (
                   <div
-                    className="text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500 selection:text-slate-900"
+                    className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900"
                     key={idx}
                   >
                     {line}
-                    <br />
                   </div>
                 );
               })}
             </div>
             <div className="flex gap-2 max-h-fit items-baseline">
-              <div className="text-emerald-300 max-h-fit">
-                phew@{user.name}:{path}$
+              <div className="text-teal-300 max-h-fit whitespace-nowrap">
+                phew@{user.username}:{path}$
               </div>
-              <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-emerald-500 selection:text-slate-900">
+              <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
                 {Array.from(command.slice(0, caretPosition)).map(
                   (char: string, idx: number) => (
                     <span key={idx}>{char}</span>

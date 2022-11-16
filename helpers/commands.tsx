@@ -3,40 +3,93 @@ import Banner from "../components/banner";
 import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Output from "../components/output";
+import Signup, { SignupData } from "../components/signup";
+import parseCommand, { ParsedCommand, parsedForSignup } from "./commandparser";
+import axios, { AxiosError } from "axios";
+import { ShareableUser } from "./shareableModel";
+import Response from "./response";
+import Error from "../components/Error";
 
-const runCommand: (prompt: string, command: string) => ReactNode = (
+const runCommand: (prompt: string, command: string) => Promise<ReactNode> = (
   prompt: string,
   command: string
-): ReactNode => {
+): Promise<ReactNode> => {
   const cmd: string = command.trim();
-  if (!cmd.length) {
-    return <Output prompt={prompt} command={command} output={[]} />;
-  }
-  if (cmd.startsWith("help")) {
-    return <Output prompt={prompt} command={command} output={<Help />} />;
-  }
-  if (cmd.startsWith("banner")) {
-    return <Output prompt={prompt} command={command} output={<Banner />} />;
-  }
-  if (cmd.startsWith("clear")) {
-    return clear();
-  }
-
-  return (
-    <Output
-      prompt={prompt}
-      command={command}
-      output={<CommandNotFound command={command} />}
-    />
+  return new Promise(
+    (
+      resolve: (value: ReactNode) => void,
+      reject: ({ clear = false, err }: { clear?: boolean; err?: any }) => void
+    ): void => {
+      const parsedCommand: ParsedCommand = parseCommand(command);
+      if (parsedCommand.command === "clear") {
+        reject({
+          clear: true,
+        });
+      }
+      if (!cmd.length) {
+        resolve(<Output prompt={prompt} command={command} output={[]} />);
+      }
+      if (parsedCommand.command === "help") {
+        resolve(<Output prompt={prompt} command={command} output={<Help />} />);
+      }
+      if (parsedCommand.command === "banner") {
+        resolve(
+          <Output prompt={prompt} command={command} output={<Banner />} />
+        );
+      }
+      if (parsedCommand.command === "signup") {
+        const signupData: SignupData = parsedForSignup(parsedCommand);
+        axios
+          .post("/api/auth/signup", {
+            username: signupData.user,
+            password: signupData.pswd,
+            email: signupData.email,
+          })
+          .then(
+            ({
+              data: {
+                data: { user },
+              },
+            }) => {
+              const sd: ShareableUser = {
+                username: user.username,
+                email: user.email,
+              };
+              resolve(
+                <Output
+                  prompt={prompt}
+                  command={command}
+                  output={<Signup data={sd} />}
+                />
+              );
+            }
+          )
+          .catch((resWithErr: AxiosError<Response>) => {
+            const dataWithErr: { msg: string; errors: string[] } = {
+              msg: resWithErr.response?.data.msg || "",
+              errors: resWithErr.response?.data.errors || [],
+            };
+            reject({
+              err: (
+                <Output
+                  prompt={prompt}
+                  command={command}
+                  output={<Error data={dataWithErr} />}
+                />
+              ),
+            });
+          });
+      } else {
+        resolve(
+          <Output
+            prompt={prompt}
+            command={command}
+            output={<CommandNotFound command={command} />}
+          />
+        );
+      }
+    }
   );
-};
-
-const about: () => ReactNode = (): ReactNode => {
-  return <div></div>;
-};
-
-const clear = () => {
-  return false;
 };
 
 export default runCommand;

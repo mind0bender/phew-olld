@@ -14,7 +14,7 @@ const Greeting: FC<GreetingData> = ({
     <div>
       <div key={-1}>
         <div>
-          Welcome to <span className="text-emerald-300">PHEW</span>
+          Welcome to <span className="text-teal-300">PHEW</span>
         </div>
         <div>
           Type{" "}

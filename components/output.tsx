@@ -14,10 +14,10 @@ const Output: React.FC<OutputData> = ({
   return (
     <div>
       <div className="flex gap-2">
-        <span className="text-emerald-300">{prompt}</span>
+        <span className="text-teal-300 whitespace-nowrap">{prompt}</span>
         <span>{command}</span>
       </div>
-      <div>{output}</div>
+      <div className="py-2">{output}</div>
     </div>
   );
 };
