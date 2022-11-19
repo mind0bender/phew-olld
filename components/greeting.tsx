@@ -1,5 +1,6 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import Banner from "./banner";
+import Output from "./output";
 
 interface GreetingData {
   setCommand: Dispatch<SetStateAction<string>>;
@@ -11,7 +12,7 @@ const Greeting: FC<GreetingData> = ({
   setCaretPosition,
 }: GreetingData) => {
   return (
-    <div>
+    <Output>
       <div key={-1}>
         <div>
           Welcome to <span className="text-teal-300">PHEW</span>
@@ -32,7 +33,7 @@ const Greeting: FC<GreetingData> = ({
       </div>
       <br />
       <Banner />
-    </div>
+    </Output>
   );
 };
 

@@ -3,15 +3,14 @@ import Banner from "../components/banner";
 import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Output from "../components/output";
-import Signup, { SignupData } from "../components/signup";
+import Signup, { onSignup, SignupData } from "../components/signup";
 import parseCommand, { ParsedCommand, parsedForSignup } from "./commandparser";
 import axios, { AxiosError } from "axios";
 import { ShareableUser } from "./shareableModel";
 import Response from "./response";
 import Error from "../components/Error";
 
-const runCommand: (prompt: string, command: string) => Promise<ReactNode> = (
-  prompt: string,
+const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
 ): Promise<ReactNode> => {
   const cmd: string = command.trim();
@@ -20,73 +19,57 @@ const runCommand: (prompt: string, command: string) => Promise<ReactNode> = (
       resolve: (value: ReactNode) => void,
       reject: ({ clear = false, err }: { clear?: boolean; err?: any }) => void
     ): void => {
-      const parsedCommand: ParsedCommand = parseCommand(command);
-      if (parsedCommand.command === "clear") {
-        reject({
-          clear: true,
-        });
-      }
-      if (!cmd.length) {
-        resolve(<Output prompt={prompt} command={command} output={[]} />);
-      }
-      if (parsedCommand.command === "help") {
-        resolve(<Output prompt={prompt} command={command} output={<Help />} />);
-      }
-      if (parsedCommand.command === "banner") {
-        resolve(
-          <Output prompt={prompt} command={command} output={<Banner />} />
-        );
-      }
-      if (parsedCommand.command === "signup") {
-        const signupData: SignupData = parsedForSignup(parsedCommand);
-        axios
-          .post("/api/auth/signup", {
-            username: signupData.user,
-            password: signupData.pswd,
-            email: signupData.email,
-          })
-          .then(
-            ({
-              data: {
-                data: { user },
-              },
-            }) => {
-              const sd: ShareableUser = {
-                username: user.username,
-                email: user.email,
-              };
-              resolve(
-                <Output
-                  prompt={prompt}
-                  command={command}
-                  output={<Signup data={sd} />}
-                />
-              );
-            }
-          )
-          .catch((resWithErr: AxiosError<Response>) => {
-            const dataWithErr: { msg: string; errors: string[] } = {
-              msg: resWithErr.response?.data.msg || "",
-              errors: resWithErr.response?.data.errors || [],
-            };
-            reject({
-              err: (
-                <Output
-                  prompt={prompt}
-                  command={command}
-                  output={<Error data={dataWithErr} />}
-                />
-              ),
-            });
+      const parsedCommand: ParsedCommand = parseCommand(cmd);
+      switch (parsedCommand.command) {
+        case "":
+          resolve(<Output />);
+          break;
+        case "clear":
+          reject({
+            clear: true,
           });
-      } else {
-        resolve(
-          <Output
-            prompt={prompt}
-            command={command}
-            output={<CommandNotFound command={command} />}
-          />
-        );
+          break;
+        case "help":
+          const helpForCommand: string | undefined = parsedCommand.args[0];
+          resolve(
+            <Output>
+              <Help helpForCommand={helpForCommand} />
+            </Output>
+          );
+          break;
+        case "banner":
+          resolve(
+            <Output>
+              <Banner />
+            </Output>
+          );
+          break;
+        case "signup":
+          onSignup(parsedCommand)
+            .then((sd: ShareableUser) => {
+              resolve(
+                <Output>
+                  <Signup data={sd} />
+                </Output>
+              );
+            })
+            .catch((dataWithErr: { msg: string; errors: string[] }) => {
+              reject({
+                err: (
+                  <Output>
+                    <Error data={dataWithErr} />
+                  </Output>
+                ),
+              });
+            });
+          break;
+        default:
+          resolve(
+            <Output>
+              <CommandNotFound command={command} />
+            </Output>
+          );
+          break;
       }
     }
   );

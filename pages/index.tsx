@@ -15,6 +15,9 @@ import {
   useState,
 } from "react";
 import Greeting from "../components/greeting";
+import Output from "../components/output";
+import Processing from "../components/processing";
+import { prompt } from "../helpers";
 import runCommand from "../helpers/commands";
 import { ShareableUser } from "../helpers/shareableModel";
 
@@ -26,6 +29,8 @@ const Home: NextPage = () => {
     useRef<HTMLSpanElement | null>(null);
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const [prevCommands, setPrevCommands] = useState<string[]>([]);
   const [prevCommandsIdx, setPrevCommandsIdx] = useState<number>(-1);
@@ -65,14 +70,35 @@ const Home: NextPage = () => {
     return (): void => {};
   }, [output]);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     if (prevCommandsIdx == -1) {
       setCommand("");
     } else if (prevCommands[prevCommandsIdx]) {
       setCommand(prevCommands[prevCommandsIdx]);
     }
-    return () => {};
+    return (): void => {};
   }, [prevCommandsIdx, prevCommands]);
+
+  const addPromptToOutput: (path: string, username: string) => void = (
+    path: string,
+    username: string
+  ): void => {
+    setOutput((po: ReactNode[]): ReactNode[] => [
+      ...po,
+      <div key={po.length} className="flex gap-2">
+        <span className="text-teal-300 whitespace-nowrap">
+          {prompt(path, username)}
+        </span>
+        <span>{command}</span>
+      </div>,
+    ]);
+    if (command !== prevCommands[prevCommands.length - 1]) {
+      setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
+    }
+    if (prevCommandsIdx !== -1) {
+      setPrevCommandsIdx(-1);
+    }
+  };
 
   const keyUpCaptureHandler: KeyboardEventHandler<HTMLInputElement> = (
     e: KeyboardEvent<HTMLInputElement>
@@ -84,26 +110,21 @@ const Home: NextPage = () => {
     e: KeyboardEvent<HTMLInputElement>
   ): void => {
     if (e.key === "Enter") {
-      runCommand(`phew@${user.username}:${path}$`, command)
-        .then((out: ReactNode) => {
+      addPromptToOutput(path, user.username);
+      setIsProcessing(true);
+      runCommand(command)
+        .then((out: ReactNode): void => {
           setOutput((po: ReactNode[]): ReactNode[] => [...po, out]);
         })
-        .catch(({ clear, err }: { clear: boolean; err?: any }) => {
+        .catch(({ clear, err }: { clear: boolean; err?: any }): void => {
           if (clear) {
             setOutput([]);
           } else {
-            // display the err pink;
-            console.log(err);
             setOutput((po: ReactNode[]): ReactNode[] => [...po, err]);
           }
         })
-        .finally(() => {
-          if (command !== prevCommands[prevCommands.length - 1]) {
-            setPrevCommands((ppcs: string[]): string[] => [...ppcs, command]);
-          }
-          if (prevCommandsIdx !== -1) {
-            setPrevCommandsIdx(-1);
-          }
+        .finally((): void => {
+          setIsProcessing(false);
         });
       return;
     }
@@ -136,7 +157,7 @@ const Home: NextPage = () => {
 
   const focusChangeHandler: FocusEventHandler<HTMLInputElement> = (
     e: FocusEvent<HTMLInputElement>
-  ) => {
+  ): void => {
     const selectedText: string | undefined = window.getSelection()?.toString();
     if (!selectedText) {
       setIsFocused(document.activeElement == cmdInp.current);
@@ -184,7 +205,7 @@ const Home: NextPage = () => {
               onChange={onChangeHandler}
             />
             <div className="flex flex-col gap-1">
-              {output.map((line: ReactNode, idx) => {
+              {output.map((line: ReactNode, idx: number) => {
                 return (
                   <div
                     className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900"
@@ -195,7 +216,11 @@ const Home: NextPage = () => {
                 );
               })}
             </div>
-            <div className="flex gap-2 max-h-fit items-baseline">
+            <div
+              className={`flex gap-2 max-h-fit items-baseline ${`${
+                isProcessing ? "invisible absolute" : "block"
+              }`}}`}
+            >
               <div className="text-teal-300 max-h-fit whitespace-nowrap">
                 phew@{user.username}:{path}$
               </div>
@@ -220,6 +245,7 @@ const Home: NextPage = () => {
                 )}
               </div>
             </div>
+            {isProcessing && <Processing />}
           </div>
         </label>
       </div>
@@ -228,8 +254,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-/**
- * Known Bugs!
- * caret stays on first line even when command is multiline.
- */
