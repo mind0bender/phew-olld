@@ -1,0 +1,34 @@
+import { NextRequest, NextResponse } from "next/server";
+import { verify } from "./lib/jwt";
+import validator from "validator";
+import { ObjectId } from "mongoose";
+const { isEmpty } = validator;
+
+export function middleware(
+  req: NextRequest & { issignin: boolean }
+): Promise<NextResponse> {
+  return new Promise(
+    (
+      resolve: (value: NextResponse) => void,
+      reject: (reason?: any) => void
+    ): void => {
+      const token: string | null = req.headers.get("authorization");
+      if (token && !isEmpty(token)) {
+        const response: NextResponse = NextResponse.next();
+        verify(token)
+          .then(({ _id }: { _id: ObjectId }): void => {
+            response.cookies.set("_id", _id);
+            console.log("_id:", _id); //pink;
+            resolve(response);
+          })
+          .catch((): void => {
+            resolve(response);
+          });
+      }
+    }
+  );
+}
+
+export const config = {
+  matcher: ["/api/auth/login"],
+};

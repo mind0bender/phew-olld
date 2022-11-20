@@ -4,7 +4,8 @@ import Response from "../../../helpers/response";
 import dbConnect from "../../../lib/dbconnect";
 import validator from "validator";
 import { ObjectId } from "mongoose";
-
+import { shareableUser } from "../../../helpers/shareableModel";
+import { sign } from "../../../lib/jwt";
 const { isEmpty, isEmail } = validator;
 
 type userInfo = {
@@ -18,7 +19,7 @@ export default async function handler(
   res: NextApiResponse<any>
 ) {
   return new Promise(
-    (resolve: (value: any) => void, reject: (reasons: any) => void) => {
+    (resolve: (value: any) => void, reject: (reasons: any) => void): void => {
       switch (req.method) {
         case "POST":
           dbConnect()
@@ -35,7 +36,7 @@ export default async function handler(
               else errs.push("Invalid `email`");
 
               if (errs.length) {
-                resolve(
+                return resolve(
                   res.status(422).send(
                     new Response({
                       errors: errs,
@@ -43,104 +44,107 @@ export default async function handler(
                     })
                   )
                 );
-              }
+              } else {
+                if (isEmpty(username)) {
+                  errs.push("`username` is required");
+                } else if (isEmail(username)) {
+                  errs.push("`username` can not be an email");
+                }
+                if (isEmpty(password)) {
+                  errs.push("`password` is required");
+                } else if (
+                  !validator.isLength(password, {
+                    min: 4,
+                    max: 16,
+                  })
+                ) {
+                  errs.push("`password` must be between 4 and 16 characters.");
+                }
+                if (!isEmail(email)) {
+                  errs.push("Invalid `email`");
+                }
 
-              if (isEmpty(username)) {
-                errs.push("`username` is required");
-              } else if (isEmail(username)) {
-                errs.push("`username` can not be an email");
-              }
-              if (isEmpty(password)) {
-                errs.push("`password` is required");
-              } else if (
-                !validator.isLength(password, {
-                  min: 4,
-                  max: 16,
-                })
-              ) {
-                errs.push("`password` must be between 4 and 16 characters.");
-              }
-              if (!isEmail(email)) {
-                errs.push("Invalid `email`");
-              }
-
-              if (errs.length) {
-                resolve(
-                  res.status(422).send(
-                    new Response({
-                      errors: errs,
-                      msg: "Invalid Credentials:",
-                    })
-                  )
-                );
-              }
-
-              User.exists({
-                $or: [
-                  {
-                    email,
-                  },
-                  { username },
-                ],
-              })
-                .exec()
-                .then((docExists: { _id: ObjectId } | null): void => {
-                  if (docExists) {
-                    resolve(
-                      res.status(403).send(
-                        new Response({
-                          errors: ["`username` or `email` already exists"],
-                          msg: "Conflicting Credentials:",
-                        })
-                      )
-                    );
-                  } else {
-                    const client: UserInterface = new User({
-                      username,
-                      password,
-                      email,
-                    });
-                    client
-                      .save()
-                      .then((userDoc: UserInterface): void => {
-                        resolve(
-                          res.status(201).send(
-                            new Response({
-                              data: {
-                                user: userDoc,
-                              },
-                              msg: "User Created",
-                            })
-                          )
-                        );
-                      })
-                      .catch((err: Error): void => {
-                        console.error(err);
-                        resolve(
-                          res.status(500).send(
-                            new Response({
-                              errors: ["There was some problem"],
-                              msg: "There was some problem",
-                            })
-                          )
-                        );
-                      });
-                  }
-                })
-                .catch((err: Error): void => {
-                  console.error(err);
-                  resolve(
-                    res.status(500).send(
+                if (errs.length) {
+                  return resolve(
+                    res.status(422).send(
                       new Response({
-                        errors: ["There was some problem"],
-                        msg: "There was some problem",
+                        errors: errs,
+                        msg: "Invalid Credentials:",
                       })
                     )
                   );
-                });
+                } else {
+                  User.exists({
+                    $or: [
+                      {
+                        email,
+                      },
+                      { username },
+                    ],
+                  })
+                    .exec()
+                    .then((docExists: { _id: ObjectId } | null): void => {
+                      if (docExists) {
+                        return resolve(
+                          res.status(403).send(
+                            new Response({
+                              errors: ["`username` or `email` already exists"],
+                              msg: "Conflicting Credentials:",
+                            })
+                          )
+                        );
+                      } else {
+                        const client: UserInterface = new User({
+                          username,
+                          password,
+                          email,
+                        });
+                        client
+                          .save()
+                          .then((userDoc: UserInterface): void => {
+                            sign(userDoc._id).then((token: string): void => {
+                              return resolve(
+                                res.status(201).send(
+                                  new Response({
+                                    data: {
+                                      user: shareableUser(userDoc),
+                                      token,
+                                    },
+                                    msg: "User Created",
+                                  })
+                                )
+                              );
+                            });
+                          })
+                          .catch((err: Error): void => {
+                            console.error(err);
+                            return resolve(
+                              res.status(500).send(
+                                new Response({
+                                  errors: ["There was some problem"],
+                                  msg: "There was some problem",
+                                })
+                              )
+                            );
+                          });
+                      }
+                    })
+                    .catch((err: Error): void => {
+                      console.error(err);
+                      return resolve(
+                        res.status(500).send(
+                          new Response({
+                            errors: ["There was some problem"],
+                            msg: "There was some problem",
+                          })
+                        )
+                      );
+                    });
+                }
+              }
             })
             .catch((err: Error): void => {
-              resolve(
+              return resolve(
                 res.status(500).send(
                   new Response({
                     errors: ["There was some problem"],

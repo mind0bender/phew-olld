@@ -3,12 +3,10 @@ import Banner from "../components/banner";
 import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Output from "../components/output";
-import Signup, { onSignup, SignupData } from "../components/signup";
-import parseCommand, { ParsedCommand, parsedForSignup } from "./commandparser";
-import axios, { AxiosError } from "axios";
+import Signup, { onSignup } from "../components/signup";
+import parseCommand, { ParsedCommand } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
-import Response from "./response";
-import Error from "../components/Error";
+import ErrorComponent from "../components/Error";
 
 const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
@@ -57,7 +55,7 @@ const runCommand: (command: string) => Promise<ReactNode> = (
               reject({
                 err: (
                   <Output>
-                    <Error data={dataWithErr} />
+                    <ErrorComponent data={dataWithErr} />
                   </Output>
                 ),
               });

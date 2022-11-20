@@ -26,11 +26,13 @@ const dbConnect: () => Promise<typeof mongoose> = (): Promise<
 
       if (!cached.promise) {
         cached.promise = mongoose.connect(MONGODB_URI);
-        cached.promise.then((conn: typeof mongoose): void => {
-          console.log("	connected to database");
-          cached.conn = conn;
-          resolve(conn);
-        });
+        cached.promise
+          .then((conn: typeof mongoose): void => {
+            console.log("	connected to database");
+            cached.conn = conn;
+            resolve(conn);
+          })
+          .catch(reject);
       }
     }
   );

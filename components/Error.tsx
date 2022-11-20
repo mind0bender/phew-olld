@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-function Error({ data }: { data: { msg: string; errors: string[] } }) {
+function ErrorComponent({ data }: { data: { msg: string; errors: string[] } }) {
   return (
     <div className="border-l-4 px-2 border-red-800">
       <div>{data.msg}</div>
@@ -13,4 +13,4 @@ function Error({ data }: { data: { msg: string; errors: string[] } }) {
   );
 }
 
-export default Error;
+export default ErrorComponent;

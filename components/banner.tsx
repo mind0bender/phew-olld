@@ -50,7 +50,7 @@ const BannerLetter: FC<BannerLetterData> = ({ letter }: BannerLetterData) => {
                 (char: string, idx2: number): ReactNode => {
                   return (
                     <span
-                      className={`${char !== " " && "underline"}`}
+                      className={`${char !== " " && "underline "}`}
                       key={idx2}
                     >
                       {char}
