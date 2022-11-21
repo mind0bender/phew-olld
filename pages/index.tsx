@@ -1,27 +1,55 @@
 import { CloseSharp } from "@mui/icons-material";
-import type { NextPage } from "next";
+import { AxiosResponse } from "axios";
+import { ObjectId } from "mongoose";
+import type { NextApiRequest, NextApiResponse, NextPage } from "next";
 import Head from "next/head";
 import {
   ChangeEvent,
   ChangeEventHandler,
+  Context,
+  createContext,
+  Dispatch,
   FocusEvent,
   FocusEventHandler,
   KeyboardEvent,
   KeyboardEventHandler,
   MutableRefObject,
   ReactNode,
+  SetStateAction,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
 import Greeting from "../components/greeting";
-import Output from "../components/output";
 import Processing from "../components/processing";
-import { prompt } from "../helpers";
+import { Prompt } from "../components/prompt";
+import login from "../controllers/auth/login.controller";
 import runCommand from "../helpers/commands";
 import { ShareableUser } from "../helpers/shareableModel";
+import { verify } from "../lib/jwt";
 
-const Home: NextPage = () => {
+export type UserType = [
+  ShareableUser,
+  Dispatch<SetStateAction<ShareableUser>> | null
+];
+
+export const defaultUser: ShareableUser = {
+  username: "stem",
+  email: "",
+};
+
+export const UserContext: Context<UserType> = createContext<UserType>([
+  defaultUser,
+  null,
+]);
+
+interface HomeProps {
+  initUser: ShareableUser;
+  token: string;
+}
+
+const Home: NextPage<HomeProps> = ({ initUser, token }: HomeProps) => {
   const [command, setCommand] = useState<string>("");
   const cmdInp: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -37,11 +65,7 @@ const Home: NextPage = () => {
 
   const [path, setPath] = useState("~");
 
-  const [user, setUser] = useState<ShareableUser>({
-    username: "stem",
-    email: "",
-  });
-
+  const [user, setUser] = useState<ShareableUser>(initUser);
   const [output, setOutput] = useState<ReactNode[]>([
     <Greeting
       key={-1}
@@ -86,9 +110,7 @@ const Home: NextPage = () => {
     setOutput((po: ReactNode[]): ReactNode[] => [
       ...po,
       <div key={po.length} className="flex gap-2">
-        <span className="text-teal-300 whitespace-nowrap">
-          {prompt(path, username)}
-        </span>
+        <Prompt path={path} username={username} />
         <span>{command}</span>
       </div>,
     ]);
@@ -171,19 +193,19 @@ const Home: NextPage = () => {
   };
 
   return (
-    <>
+    <UserContext.Provider value={[user, setUser]}>
       <Head>
         <title>{`${user.username}:${path}`}</title>
       </Head>
       <div className="flex flex-col w-full h-screen p-2 bg-slate-900 font-extralight font-mono">
         <div className="flex justify-between rounded-t-md">
-          <div className="bg-slate-800 text-white px-10 py-1 shadow-inner shadow-slate-700 border-t-2 border-x-2 rounded-t-md border-slate-700">
+          <div className="bg-slate-800 text-white px-10 py-1 shadow-inner shadow-slate-800 border-t-2 border-x-2 rounded-t-md border-slate-700">
             some-random-process
           </div>
           <div className="grow border-slate-700 border-b-2" />
           <div className="border-b-2 hover:bg-red-600 rounded-tr-md border-slate-700">
             <button
-              title="not yet; pink"
+              title="not yet pink"
               className="text-white p-1 rounded-tr-md duration-150"
             >
               <CloseSharp />
@@ -249,8 +271,65 @@ const Home: NextPage = () => {
           </div>
         </label>
       </div>
-    </>
+    </UserContext.Provider>
   );
 };
 
 export default Home;
+
+export function getServerSideProps({
+  req,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+}): Promise<{
+  props: {
+    initUser: ShareableUser;
+    token: string;
+  };
+}> {
+  return new Promise(
+    (
+      resolve: (value: {
+        props: {
+          initUser: ShareableUser;
+          token: string;
+        };
+      }) => void,
+      reject: (reason?: any) => void
+    ): void => {
+      const token: string | undefined = req.cookies.jwt;
+      if (token) {
+        verify(token).then(({ _id }: { _id: ObjectId | null }): void => {
+          if (_id) {
+            login({ _id: String(_id) })
+              .then(({ data }: { data: any }): void => {
+                console.log(data.data);
+                resolve({
+                  props: {
+                    initUser: data.data.user,
+                    token: "",
+                  },
+                });
+              })
+              .catch((err: any): void => {
+                resolve({
+                  props: {
+                    initUser: defaultUser,
+                    token: "",
+                  },
+                });
+              });
+          } else {
+            resolve({
+              props: {
+                initUser: defaultUser,
+                token: "",
+              },
+            });
+          }
+        });
+      }
+    }
+  );
+}

@@ -4,10 +4,10 @@ import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Output from "../components/output";
 import Signup, { onSignup } from "../components/signup";
-import parseCommand, { ParsedCommand } from "./commandparser";
+import parseCommand, { ParsedCommand, parsedForLogin } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
 import ErrorComponent from "../components/Error";
-import Login, { onLogin } from "../components/login";
+import Login, { LoginData, onLogin } from "../components/login";
 
 const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
@@ -45,10 +45,10 @@ const runCommand: (command: string) => Promise<ReactNode> = (
           break;
         case "signup":
           onSignup(parsedCommand)
-            .then((sd: ShareableUser) => {
+            .then((data: { user: ShareableUser; token: string }) => {
               resolve(
                 <Output>
-                  <Signup data={sd} />
+                  <Signup user={data.user} token={data.token} />
                 </Output>
               );
             })
@@ -63,11 +63,12 @@ const runCommand: (command: string) => Promise<ReactNode> = (
             });
           break;
         case "login":
-          onLogin(parsedCommand)
-            .then((sd: ShareableUser) => {
+          const loginData: LoginData = parsedForLogin(parsedCommand);
+          onLogin(loginData)
+            .then(({ user, token }: { user: ShareableUser; token: string }) => {
               resolve(
                 <Output>
-                  <Login data={sd} />
+                  <Login user={user} token={token} />
                 </Output>
               );
             })

@@ -17,7 +17,7 @@ type userInfo = {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
-) {
+): Promise<any> {
   return new Promise(
     (resolve: (value: any) => void, reject: (reasons: any) => void): void => {
       switch (req.method) {

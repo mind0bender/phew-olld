@@ -20,23 +20,23 @@ export const sign: (_id: ObjectId) => Promise<string> = async (
   return token;
 };
 
-export const verify: (token: string) => Promise<{ _id: ObjectId }> = async (
+export const verify: (
   token: string
-): Promise<{ _id: ObjectId }> => {
-  return new Promise<{ _id: ObjectId }>(
+) => Promise<{ _id: ObjectId | null }> = async (
+  token: string
+): Promise<{ _id: ObjectId | null }> => {
+  return new Promise<{ _id: ObjectId | null }>(
     (
-      resolve: (valie: { _id: ObjectId }) => void,
+      resolve: (value: { _id: ObjectId | null }) => void,
       reject: (reason?: any) => void
     ): void => {
-      try {
-        jwtVerify(token, SECRET_KEY).then(
-          ({ payload }: JWTVerifyResult): void => {
-            resolve({ _id: payload._id as ObjectId });
-          }
-        );
-      } catch (err) {
-        reject(err);
-      }
+      jwtVerify(token, SECRET_KEY)
+        .then(({ payload }: JWTVerifyResult): void => {
+          resolve({ _id: payload._id as ObjectId });
+        })
+        .catch((err) => {
+          resolve({ _id: null });
+        });
     }
   );
 };

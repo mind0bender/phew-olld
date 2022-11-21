@@ -1,9 +1,11 @@
 import { ParsedCommand, parsedForLogin } from "../helpers/commandparser";
-import { ShareableUser } from "../helpers/shareableModel";
+import { shareableUser, ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Response from "../helpers/response";
-import { ReactNode } from "react";
+import { useContext, useEffect } from "react";
+import { useCookies } from "react-cookie";
+import { UserContext, UserType } from "../pages";
 
 const { isEmpty } = validator;
 export interface LoginData {
@@ -12,14 +14,13 @@ export interface LoginData {
 }
 
 export const onLogin: (
-  parsedCommand: ParsedCommand
-) => Promise<ShareableUser> = (
-  parsedCommand: ParsedCommand
-): Promise<ShareableUser> => {
-  const loginData: LoginData = parsedForLogin(parsedCommand);
-  return new Promise(
+  loginData: LoginData
+) => Promise<{ user: ShareableUser; token: string }> = (
+  loginData: LoginData
+): Promise<{ user: ShareableUser; token: string }> => {
+  return new Promise<{ user: ShareableUser; token: string }>(
     (
-      resolve: (value: ShareableUser) => void,
+      resolve: (value: { user: ShareableUser; token: string }) => void,
       reject: (reason?: { msg: string; errors: string[] }) => void
     ): void => {
       if (isEmpty(loginData.user) && isEmpty(loginData.pswd)) {
@@ -46,14 +47,17 @@ usage-
         .then(
           ({
             data: {
-              data: { user },
+              data: { user, token },
             },
-          }: AxiosResponse<any, any>): void => {
+          }: AxiosResponse<
+            { data: { user: ShareableUser; token: string } },
+            any
+          >): void => {
             const sd: ShareableUser = {
               username: user.username,
               email: user.email,
             };
-            resolve(sd);
+            resolve({ user: sd, token });
           }
         )
         .catch((resWithErr: AxiosError<Response>): void => {
@@ -67,7 +71,14 @@ usage-
   );
 };
 
-function Login({ data }: { data: ShareableUser }) {
+function Login({ user, token }: { user: ShareableUser; token: string }) {
+  const [, setCookie] = useCookies<"jwt", { jwt: string }>(["jwt"]);
+  const [, setUser] = useContext<UserType>(UserContext);
+  useEffect((): (() => void) => {
+    setCookie("jwt", token);
+    setUser && setUser(user);
+    return (): void => {};
+  }, [token, setCookie, user, setUser]);
   return (
     <div>
       <div>Logged in as:</div>
@@ -78,7 +89,7 @@ function Login({ data }: { data: ShareableUser }) {
           <span>
             <div className="flex gap-2">
               <div>username:</div>
-              <div>{data.username}</div>
+              <div>{user.username}</div>
             </div>
             <div className="flex gap-2">
               <div>email{"   :"}</div>
@@ -86,9 +97,9 @@ function Login({ data }: { data: ShareableUser }) {
                 className="underline decoration-solid hover:decoration-2 decoration-slate-600"
                 target="_blank"
                 rel="noreferrer"
-                href={`mailto:${data.email}`}
+                href={`mailto:${user.email}`}
               >
-                {data.email}
+                {user.email}
               </a>
             </div>
           </span>

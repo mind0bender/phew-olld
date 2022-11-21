@@ -1,9 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { ParsedCommand, parsedForSignup } from "../helpers/commandparser";
 import Response from "../helpers/response";
 import { ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
+import { useCookies } from "react-cookie";
+import { UserContext, UserType } from "../pages";
+
 const { isEmpty } = validator;
 
 export interface SignupData {
@@ -14,13 +17,13 @@ export interface SignupData {
 
 export const onSignup: (
   parsedCommand: ParsedCommand
-) => Promise<ShareableUser> = (
+) => Promise<{ user: ShareableUser; token: string }> = (
   parsedCommand: ParsedCommand
-): Promise<ShareableUser> => {
+): Promise<{ user: ShareableUser; token: string }> => {
   const signupData: SignupData = parsedForSignup(parsedCommand);
   return new Promise(
     (
-      resolve: (value: ShareableUser) => void,
+      resolve: (value: { user: ShareableUser; token: string }) => void,
       reject: (reason?: { msg: string; errors: string[] }) => void
     ): void => {
       if (
@@ -53,12 +56,18 @@ usage-
         .then(
           ({
             data: {
-              data: { user },
+              data: { user, token },
             },
-          }: AxiosResponse<any, any>): void => {
-            const sd: ShareableUser = {
-              username: user.username,
-              email: user.email,
+          }: AxiosResponse<
+            { data: { user: ShareableUser; token: string } },
+            any
+          >): void => {
+            const sd: { user: ShareableUser; token: string } = {
+              user: {
+                username: user.username,
+                email: user.email,
+              },
+              token,
             };
             resolve(sd);
           }
@@ -74,7 +83,15 @@ usage-
   );
 };
 
-function Login({ data }: { data: ShareableUser }) {
+function SignUp({ user, token }: { user: ShareableUser; token: string }) {
+  const [, setCookie] = useCookies<"jwt", { jwt: string }>(["jwt"]);
+  const [, setUser] = useContext<UserType>(UserContext);
+  useEffect((): (() => void) => {
+    setCookie("jwt", token);
+    setUser && setUser(user);
+    return (): void => {};
+  }, [token, setCookie, user, setUser]);
+
   return (
     <div>
       <div>User created with following information:</div>
@@ -85,7 +102,7 @@ function Login({ data }: { data: ShareableUser }) {
           <span>
             <div className="flex gap-2">
               <div>username:</div>
-              <div>{data.username}</div>
+              <div>{user.username}</div>
             </div>
             <div className="flex gap-2">
               <div>email{"   :"}</div>
@@ -93,9 +110,9 @@ function Login({ data }: { data: ShareableUser }) {
                 className="underline decoration-solid hover:decoration-2 decoration-slate-600"
                 target="_blank"
                 rel="noreferrer"
-                href={`mailto:${data.email}`}
+                href={`mailto:${user.email}`}
               >
-                {data.email}
+                {user.email}
               </a>
             </div>
           </span>
@@ -107,4 +124,4 @@ function Login({ data }: { data: ShareableUser }) {
   );
 }
 
-export default Login;
+export default SignUp;
