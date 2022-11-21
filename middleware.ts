@@ -18,12 +18,13 @@ export function middleware(
         verify(token)
           .then(({ _id }: { _id: ObjectId }): void => {
             response.cookies.set("_id", _id);
-            console.log("_id:", _id); //pink;
             resolve(response);
           })
           .catch((): void => {
             resolve(response);
           });
+      } else {
+        resolve(NextResponse.next());
       }
     }
   );

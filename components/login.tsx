@@ -1,33 +1,28 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import React, { useEffect } from "react";
-import { ParsedCommand, parsedForSignup } from "../helpers/commandparser";
-import Response from "../helpers/response";
+import { ParsedCommand, parsedForLogin } from "../helpers/commandparser";
 import { ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
-const { isEmpty } = validator;
+import axios, { AxiosError, AxiosResponse } from "axios";
+import Response from "../helpers/response";
+import { ReactNode } from "react";
 
-export interface SignupData {
+const { isEmpty } = validator;
+export interface LoginData {
   user: string;
   pswd: string;
-  email: string;
 }
 
-export const onSignup: (
+export const onLogin: (
   parsedCommand: ParsedCommand
 ) => Promise<ShareableUser> = (
   parsedCommand: ParsedCommand
 ): Promise<ShareableUser> => {
-  const signupData: SignupData = parsedForSignup(parsedCommand);
+  const loginData: LoginData = parsedForLogin(parsedCommand);
   return new Promise(
     (
       resolve: (value: ShareableUser) => void,
       reject: (reason?: { msg: string; errors: string[] }) => void
     ): void => {
-      if (
-        isEmpty(signupData.user) &&
-        isEmpty(signupData.pswd) &&
-        isEmpty(signupData.email)
-      ) {
+      if (isEmpty(loginData.user) && isEmpty(loginData.pswd)) {
         reject({
           msg: "No arguments passed:",
           errors: [
@@ -35,20 +30,18 @@ export const onSignup: (
 ...args:
     user : \`username\` of the account,
     pswd : \`password\` of the account,
-    email: \`email\` of the account,
             
 usage-
-    signup /<username>/<password>/<email>
+    login /<username>/<password>
     or
-    signup /?user=<username>&pswd=<password>&email=<email>`,
+    login /?user=<username>&pswd=<password>`,
           ],
         });
       }
       axios
-        .post("/api/auth/signup", {
-          username: signupData.user,
-          password: signupData.pswd,
-          email: signupData.email,
+        .post("/api/auth/login", {
+          username: loginData.user,
+          password: loginData.pswd,
         })
         .then(
           ({
@@ -77,7 +70,7 @@ usage-
 function Login({ data }: { data: ShareableUser }) {
   return (
     <div>
-      <div>User created with following information:</div>
+      <div>Logged in as:</div>
       <div className="pl-6 pt-2 max-w-fit">
         <div>+----</div>
         <div className="flex">

@@ -1,3 +1,4 @@
+import { LoginData } from "../components/login";
 import { SignupData } from "../components/signup";
 
 export interface ParsedCommand {
@@ -80,6 +81,21 @@ export const parsedForSignup: (parsedCommand: ParsedCommand) => SignupData = (
     user: PD.get("user") || "",
     pswd: PD.get("pswd") || "",
     email: PD.get("email") || "",
+  };
+};
+
+export const parsedForLogin: (parsedCommand: ParsedCommand) => LoginData = (
+  parsedCommand: ParsedCommand
+): LoginData => {
+  const fromParsed = new Map([
+    [0, "user"],
+    [1, "pswd"],
+  ]);
+  const PD: Data = parsedToData(parsedCommand, fromParsed);
+
+  return {
+    user: PD.get("user") || "",
+    pswd: PD.get("pswd") || "",
   };
 };
 

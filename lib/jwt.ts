@@ -1,4 +1,4 @@
-import { jwtVerify, KeyLike, SignJWT } from "jose";
+import { jwtVerify, JWTVerifyResult, KeyLike, SignJWT } from "jose";
 import { ObjectId } from "mongoose";
 
 const SECRET: string | undefined = process.env.SECRET_KEY;
@@ -23,12 +23,22 @@ export const sign: (_id: ObjectId) => Promise<string> = async (
 export const verify: (token: string) => Promise<{ _id: ObjectId }> = async (
   token: string
 ): Promise<{ _id: ObjectId }> => {
-  try {
-    const { payload, protectedHeader } = await jwtVerify(token, SECRET_KEY);
-    return { _id: payload._id as ObjectId };
-  } catch (err) {
-    throw err;
-  }
+  return new Promise<{ _id: ObjectId }>(
+    (
+      resolve: (valie: { _id: ObjectId }) => void,
+      reject: (reason?: any) => void
+    ): void => {
+      try {
+        jwtVerify(token, SECRET_KEY).then(
+          ({ payload }: JWTVerifyResult): void => {
+            resolve({ _id: payload._id as ObjectId });
+          }
+        );
+      } catch (err) {
+        reject(err);
+      }
+    }
+  );
 };
 // export const verify: (token: string) => Promise<{ _id: ObjectId }> = (
 //   token: string

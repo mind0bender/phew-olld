@@ -7,6 +7,7 @@ import Signup, { onSignup } from "../components/signup";
 import parseCommand, { ParsedCommand } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
 import ErrorComponent from "../components/Error";
+import Login, { onLogin } from "../components/login";
 
 const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
@@ -48,6 +49,25 @@ const runCommand: (command: string) => Promise<ReactNode> = (
               resolve(
                 <Output>
                   <Signup data={sd} />
+                </Output>
+              );
+            })
+            .catch((dataWithErr: { msg: string; errors: string[] }) => {
+              reject({
+                err: (
+                  <Output>
+                    <ErrorComponent data={dataWithErr} />
+                  </Output>
+                ),
+              });
+            });
+          break;
+        case "login":
+          onLogin(parsedCommand)
+            .then((sd: ShareableUser) => {
+              resolve(
+                <Output>
+                  <Login data={sd} />
                 </Output>
               );
             })

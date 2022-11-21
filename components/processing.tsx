@@ -2,14 +2,22 @@ import React, { useEffect, useState } from "react";
 import Output from "./output";
 
 const frames: string[] = [
-  "['  ]",
-  "[ ' ]",
-  "[  ']",
-  "[  -]",
-  "[  _]",
-  "[ _ ]",
-  "[_  ]",
-  "[-  ]",
+  "[`  ][][][][][][]]",
+  "[[ ` [][][][][][]]",
+  "[[]  `][][][][][]]",
+  "[[][  -[][][][][]]",
+  "[[][]  _][][][][]]",
+  "[[][][ _ [][][][]]",
+  "[[][][]_  ][][][]]",
+  "[[][][][-  [][][]]",
+  "[[][][][]`  ][][]]",
+  "[[][][][][ ` [][]]",
+  "[[][][][][]  `][]]",
+  "[[][][][][][  -[]]",
+  "[[][][][][][]  _]]",
+  "[[][][][][][][ _ ]",
+  "[ [][][][][][][_ ]",
+  "[  [][][][][][][-]",
 ];
 
 function Processing() {
@@ -26,10 +34,24 @@ function Processing() {
 
   return (
     <Output>
-      <div>Your request is being precessed</div>
-      <div className="whitespace-pre">{`${"[".repeat(frame % frames.length)}${
-        frames[frame % frames.length]
-      }${"]".repeat(frames.length - (frame % frames.length) - 1)}`}</div>
+      <div className="max-w-fit">
+        <div>Your request is being processed</div>
+        <div className="flex justify-between">
+          <div className="whitespace-pre">{frames[frame % frames.length]}</div>
+          <div
+            className={`${
+              (frame * 150) / 1000 > 120 ? "text-red-500" : "text-green-500"
+            }`}
+          >
+            {Math.floor((frame * 150) / 1000)}s
+          </div>
+        </div>
+        {Math.floor((frame * 150) / 1000) > 120 && (
+          <div className="text-red-500 text-sm">
+            This is taking longer than usual.
+          </div>
+        )}
+      </div>
     </Output>
   );
 }

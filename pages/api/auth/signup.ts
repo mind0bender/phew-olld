@@ -102,22 +102,32 @@ export default async function handler(
                         client
                           .save()
                           .then((userDoc: UserInterface): void => {
-                            sign(userDoc._id).then((token: string): void => {
-                              return resolve(
-                                res.status(201).send(
-                                  new Response({
-                                    data: {
-                                      user: shareableUser(userDoc),
-                                      token,
-                                    },
-                                    msg: "User Created",
-                                  })
-                                )
-                              );
-                            });
+                            sign(userDoc._id)
+                              .then((token: string): void => {
+                                return resolve(
+                                  res.status(201).send(
+                                    new Response({
+                                      data: {
+                                        user: shareableUser(userDoc),
+                                        token,
+                                      },
+                                      msg: "User Created",
+                                    })
+                                  )
+                                );
+                              })
+                              .catch((err: Error): void => {
+                                return reject(
+                                  res.send(
+                                    new Response({
+                                      errors: ["Can not create JWT"],
+                                      msg: "There was some problem",
+                                    })
+                                  )
+                                );
+                              });
                           })
                           .catch((err: Error): void => {
-                            console.error(err);
                             return resolve(
                               res.status(500).send(
                                 new Response({
@@ -130,7 +140,6 @@ export default async function handler(
                       }
                     })
                     .catch((err: Error): void => {
-                      console.error(err);
                       return resolve(
                         res.status(500).send(
                           new Response({
@@ -155,6 +164,7 @@ export default async function handler(
             });
           break;
         default:
+          console.log("pika 99");
           resolve(res.status(404).end());
           break;
       }

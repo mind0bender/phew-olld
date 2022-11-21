@@ -18,7 +18,7 @@ export default async function handler(
   res: NextApiResponse<any>
 ): Promise<void> {
   return new Promise(
-    (resolve: (value: any) => void, reject: (reason: any) => void): void => {
+    (resolve: (value?: any) => void, reject: (reason?: any) => void): any => {
       switch (req.method) {
         case "POST":
           dbConnect()
@@ -28,8 +28,37 @@ export default async function handler(
               if (isObjectIdOrHexString(_id)) {
                 user
                   .findById(_id)
-                  .then((userDoc: UserInterface): void => {})
-                  .catch();
+                  .then((userDoc: UserInterface): void => {
+                    if (userDoc) {
+                      return resolve(
+                        res.send(
+                          new Response({
+                            data: { user: shareableUser(userDoc) },
+                            msg: "Login successfull",
+                          })
+                        )
+                      );
+                    } else {
+                      return resolve(
+                        res.send(
+                          new Response({
+                            errors: ["User not found"],
+                            msg: "There was a problem",
+                          })
+                        )
+                      );
+                    }
+                  })
+                  .catch((): void => {
+                    return resolve(
+                      res.send(
+                        new Response({
+                          errors: ["Problem finding user"],
+                          msg: "There was a problem",
+                        })
+                      )
+                    );
+                  });
               } else {
                 let {
                   username,
@@ -44,7 +73,7 @@ export default async function handler(
                 else errs.push("Invalid `passowrd`");
 
                 if (errs.length) {
-                  reject(
+                  return resolve(
                     res.status(422).send(
                       new Response({
                         errors: errs,
@@ -70,7 +99,7 @@ export default async function handler(
                   }
 
                   if (errs.length) {
-                    reject(
+                    return resolve(
                       res.status(422).send(
                         new Response({
                           msg: "Invalid Credentials:",
@@ -84,7 +113,7 @@ export default async function handler(
                       .exists({ username })
                       .then((doc: { _id: ObjectId } | null): void => {
                         if (!doc) {
-                          reject(
+                          return resolve(
                             res.status(401).send(
                               new Response({
                                 msg: "User not found",
@@ -100,19 +129,29 @@ export default async function handler(
                                 .validatePassword(password)
                                 .then((isMatched: boolean): void => {
                                   if (!isMatched) {
-                                    reject(
-                                      res.status(401).send({
-                                        errors: ["Incorrect password"],
-                                        msg: "Incorrect password",
-                                      })
+                                    return resolve(
+                                      res.status(401).send(
+                                        new Response({
+                                          errors: ["Incorrect password"],
+                                          msg: "Incorrect password",
+                                        })
+                                      )
                                     );
                                   } else {
-                                    resolve(res.send(shareableUser(userDoc)));
+                                    return resolve(
+                                      res.send(
+                                        new Response({
+                                          data: {
+                                            user: shareableUser(userDoc),
+                                          },
+                                          msg: "Login successfull",
+                                        })
+                                      )
+                                    );
                                   }
                                 })
                                 .catch((err: Error): void => {
-                                  console.log(err);
-                                  reject(
+                                  return resolve(
                                     res.status(500).send(
                                       new Response({
                                         errors: ["There was a problem"],
@@ -123,8 +162,7 @@ export default async function handler(
                                 });
                             })
                             .catch((err: Error): void => {
-                              console.log(err);
-                              reject(
+                              return resolve(
                                 res.status(500).send(
                                   new Response({
                                     errors: ["There was a problem"],
@@ -136,8 +174,7 @@ export default async function handler(
                         }
                       })
                       .catch((err: Error): void => {
-                        console.log(err);
-                        reject(
+                        return resolve(
                           res.status(500).send(
                             new Response({
                               errors: ["There was a problem"],
@@ -151,8 +188,7 @@ export default async function handler(
               }
             })
             .catch((err: Error): void => {
-              console.log(err);
-              reject(
+              return resolve(
                 res.status(500).send(
                   new Response({
                     errors: ["There was a problem"],
@@ -163,7 +199,7 @@ export default async function handler(
             });
           break;
         default:
-          reject(res.status(404).end());
+          return resolve(res.status(404).end());
           break;
       }
     }

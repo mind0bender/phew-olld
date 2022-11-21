@@ -27,13 +27,11 @@ export default function handler(token: string): Promise<void> {
                           resolve(shareableUser(userDoc));
                         })
                         .catch((err: Error): void => {
-                          console.log(err);
                           reject();
                         });
                     }
                   })
                   .catch((err: Error): void => {
-                    console.log(err);
                     reject();
                   });
               })
@@ -45,7 +43,6 @@ export default function handler(token: string): Promise<void> {
           }
         })
         .catch((err: Error): void => {
-          console.log(err);
           reject();
         });
     }
