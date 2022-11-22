@@ -16,8 +16,10 @@ export function middleware(
       if (token && !isEmpty(token)) {
         const response: NextResponse = NextResponse.next();
         verify(token)
-          .then(({ _id }: { _id: ObjectId }): void => {
-            response.cookies.set("_id", _id);
+          .then(({ _id }: { _id: ObjectId | null }): void => {
+            if (_id) {
+              response.cookies.set("_id", _id);
+            }
             resolve(response);
           })
           .catch((): void => {
