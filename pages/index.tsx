@@ -1,8 +1,7 @@
-import { CloseSharp } from "@mui/icons-material";
-import { AxiosResponse } from "axios";
 import { ObjectId } from "mongoose";
 import type { NextApiRequest, NextApiResponse, NextPage } from "next";
 import Head from "next/head";
+import Image from "next/image";
 import {
   ChangeEvent,
   ChangeEventHandler,
@@ -49,7 +48,10 @@ interface HomeProps {
   token: string;
 }
 
-const Home: NextPage<HomeProps> = ({ initUser, token }: HomeProps) => {
+const Home: NextPage<HomeProps> = ({
+  initUser = defaultUser,
+  token = "",
+}: HomeProps) => {
   const [command, setCommand] = useState<string>("");
   const cmdInp: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -82,6 +84,7 @@ const Home: NextPage<HomeProps> = ({ initUser, token }: HomeProps) => {
       setIsFocused(document.hasFocus());
     };
     window.addEventListener("blur", onblur);
+
     return (): void => {
       window.removeEventListener("blur", onblur);
     };
@@ -203,14 +206,12 @@ const Home: NextPage<HomeProps> = ({ initUser, token }: HomeProps) => {
             some-random-process
           </div>
           <div className="grow border-slate-700 border-b-2" />
-          <div className="border-b-2 hover:bg-red-600 rounded-tr-md border-slate-700">
-            <button
-              title="not yet pink"
-              className="text-white p-1 rounded-tr-md duration-150"
-            >
-              <CloseSharp />
-            </button>
-          </div>
+          <button
+            title="not yet pink"
+            className="border-b-2 px-2  hover:bg-red-600 border-slate-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
+          >
+            x
+          </button>
         </div>
         <label htmlFor="cmdinp" className="flex grow">
           <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
@@ -288,7 +289,12 @@ export function getServerSideProps({
     token: string;
   };
 }> {
-  return new Promise(
+  return new Promise<{
+    props: {
+      initUser: ShareableUser;
+      token: string;
+    };
+  }>(
     (
       resolve: (value: {
         props: {
@@ -300,34 +306,49 @@ export function getServerSideProps({
     ): void => {
       const token: string | undefined = req.cookies.jwt;
       if (token) {
-        verify(token).then(({ _id }: { _id: ObjectId | null }): void => {
-          if (_id) {
-            login({ _id: String(_id) })
-              .then(({ data }: { data: any }): void => {
-                console.log(data.data);
-                resolve({
-                  props: {
-                    initUser: data.data.user,
-                    token: "",
-                  },
+        verify(token)
+          .then(({ _id }: { _id: ObjectId | null }): void => {
+            if (_id) {
+              login({ _id: String(_id) })
+                .then(({ data }: { data: any }): void => {
+                  resolve({
+                    props: {
+                      initUser: data.data.user,
+                      token: data.data.token,
+                    },
+                  });
+                })
+                .catch((err: any): void => {
+                  resolve({
+                    props: {
+                      initUser: defaultUser,
+                      token: "",
+                    },
+                  });
                 });
-              })
-              .catch((err: any): void => {
-                resolve({
-                  props: {
-                    initUser: defaultUser,
-                    token: "",
-                  },
-                });
+            } else {
+              resolve({
+                props: {
+                  initUser: defaultUser,
+                  token: "",
+                },
               });
-          } else {
+            }
+          })
+          .catch((): void => {
             resolve({
               props: {
                 initUser: defaultUser,
                 token: "",
               },
             });
-          }
+          });
+      } else {
+        resolve({
+          props: {
+            initUser: defaultUser,
+            token: "",
+          },
         });
       }
     }

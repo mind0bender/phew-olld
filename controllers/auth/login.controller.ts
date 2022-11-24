@@ -42,13 +42,28 @@ const login: ({
               .findById(_id)
               .then((userDoc: UserInterface): void => {
                 if (userDoc) {
-                  return resolve({
-                    data: new Response({
-                      data: { user: shareableUser(userDoc) },
-                      msg: "Login successfull",
-                    }),
-                    status: 200,
-                  });
+                  sign(userDoc._id)
+                    .then((token: string): void => {
+                      return resolve({
+                        data: new Response({
+                          data: {
+                            user: shareableUser(userDoc),
+                            token,
+                          },
+                          msg: "Login successfull",
+                        }),
+                        status: 200,
+                      });
+                    })
+                    .catch((): void => {
+                      return resolve({
+                        data: new Response({
+                          errors: ["There was a problem"],
+                          msg: "There was a problem",
+                        }),
+                        status: 500,
+                      });
+                    });
                 } else {
                   return resolve({
                     data: new Response({
