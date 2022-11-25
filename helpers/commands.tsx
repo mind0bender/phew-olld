@@ -8,6 +8,7 @@ import parseCommand, { ParsedCommand, parsedForLogin } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
 import ErrorComponent from "../components/Error";
 import Login, { LoginData, onLogin } from "../components/login";
+import WhoAmI from "../components/whoami";
 
 const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
@@ -28,6 +29,12 @@ const runCommand: (command: string) => Promise<ReactNode> = (
             clear: true,
           });
           break;
+        case "whoami":
+          resolve(
+            <Output>
+              <WhoAmI />
+            </Output>
+          );
         case "help":
           const helpForCommand: string | undefined = parsedCommand.args[0];
           resolve(

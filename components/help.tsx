@@ -12,7 +12,14 @@ const commands: CommandsData = {
     desc: `don't know what to do? IDK either [jk, ofc IK]
     try \`help help\` for more info`,
     details: `Know what you want about any command
-    usage`,
+usage-
+    help <command>`,
+  },
+  whoami: {
+    desc: `memory loss? print the username.`,
+    details: `    print the username and email of the current user
+usage-
+    whoami`,
   },
   about: {
     desc: "do you know me? No, you don't",
@@ -32,8 +39,7 @@ const commands: CommandsData = {
   },
   signup: {
     desc: "create your phew",
-    details: `
-    user : \`username\` of the account,
+    details: `    user : \`username\` of the account,
     pswd : \`password\` of the account,
     email: \`email\` of the account,
             

@@ -26,7 +26,7 @@ const Greeting: FC<GreetingData> = ({
             }}
             className="text-amber-300 underline hover:bg-slate-800 hover:ring ring-slate-800 shadow-sm cursor-pointer rounded-sm px-1 py-0.5 duration-100"
           >
-            help
+            [help]
           </span>{" "}
           for more info
         </div>

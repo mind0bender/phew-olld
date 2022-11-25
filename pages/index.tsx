@@ -1,7 +1,6 @@
 import { ObjectId } from "mongoose";
 import type { NextApiRequest, NextApiResponse, NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import {
   ChangeEvent,
   ChangeEventHandler,
@@ -15,11 +14,11 @@ import {
   MutableRefObject,
   ReactNode,
   SetStateAction,
-  useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { useCookies } from "react-cookie";
 import Greeting from "../components/greeting";
 import Processing from "../components/processing";
 import { Prompt } from "../components/prompt";
@@ -75,6 +74,15 @@ const Home: NextPage<HomeProps> = ({
       setCommand={setCommand}
     />,
   ]);
+  const [, setCookies] = useCookies<"jwt", ["jwt"]>(["jwt"]);
+
+  useEffect(() => {
+    if (token) {
+      setCookies("jwt", token);
+    }
+
+    return () => {};
+  }, [token, setCookies]);
 
   useEffect((): (() => void) => {
     setIsFocused(document.hasFocus());
