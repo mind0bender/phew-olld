@@ -1,9 +1,19 @@
-import React, { MutableRefObject, useContext, useEffect, useRef } from "react";
+import React, {
+  FC,
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { ShareableUser } from "../helpers/shareableModel";
 import { defaultUser, UserContext, UserType } from "../pages";
 import CommandLink from "./commandLink";
 
-function WhoAmI({ userData }: { userData?: ShareableUser }) {
+interface WhoAmIProps {
+  userData?: ShareableUser;
+}
+
+const WhoAmI: FC<WhoAmIProps> = ({ userData }: WhoAmIProps): JSX.Element => {
   const [user] = useContext<UserType>(UserContext);
   let userWhenCalled: MutableRefObject<ShareableUser> = useRef<ShareableUser>(
     userData || user
@@ -37,9 +47,9 @@ function WhoAmI({ userData }: { userData?: ShareableUser }) {
       <div className="flex flex-row-reverse">----+</div>
     </div>
   );
-}
+};
 
-const IDKYou = () => {
+const IDKYou: FC = (): JSX.Element => {
   return (
     <div>
       I do not remember you.

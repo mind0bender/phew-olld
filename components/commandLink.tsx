@@ -13,7 +13,7 @@ const CommandLink: ({
 }: {
   children: ReactNode;
   command: string;
-}) => {
+}): JSX.Element => {
   const {
     command: [, setCommand],
     caretPosition: [, setCaretPosition],

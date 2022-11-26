@@ -1,5 +1,4 @@
-import { ParsedCommand, parsedForLogin } from "../helpers/commandparser";
-import { shareableUser, ShareableUser } from "../helpers/shareableModel";
+import { ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import Response from "../helpers/response";
@@ -14,14 +13,17 @@ export interface LoginData {
   pswd: string;
 }
 
-export const onLogin: (
+export interface UserAndToken {
+  user: ShareableUser;
+  token: string;
+}
+
+export const onLogin: (loginData: LoginData) => Promise<UserAndToken> = (
   loginData: LoginData
-) => Promise<{ user: ShareableUser; token: string }> = (
-  loginData: LoginData
-): Promise<{ user: ShareableUser; token: string }> => {
-  return new Promise<{ user: ShareableUser; token: string }>(
+): Promise<UserAndToken> => {
+  return new Promise<UserAndToken>(
     (
-      resolve: (value: { user: ShareableUser; token: string }) => void,
+      resolve: (value: UserAndToken) => void,
       reject: (reason?: { msg: string; errors: string[] }) => void
     ): void => {
       if (isEmpty(loginData.user) && isEmpty(loginData.pswd)) {
@@ -50,10 +52,7 @@ usage-
             data: {
               data: { user, token },
             },
-          }: AxiosResponse<
-            { data: { user: ShareableUser; token: string } },
-            any
-          >): void => {
+          }: AxiosResponse<{ data: UserAndToken }, any>): void => {
             const sd: ShareableUser = {
               username: user.username,
               email: user.email,
@@ -72,7 +71,7 @@ usage-
   );
 };
 
-function Login({ user, token }: { user: ShareableUser; token: string }) {
+function Login({ user, token }: UserAndToken): JSX.Element {
   const [, setCookie] = useCookies<"jwt", { jwt: string }>(["jwt"]);
   const [, setUser] = useContext<UserType>(UserContext);
   useEffect((): (() => void) => {

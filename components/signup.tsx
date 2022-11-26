@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import React, { useContext, useEffect } from "react";
+import React, { FC, useContext, useEffect } from "react";
 import { ParsedCommand, parsedForSignup } from "../helpers/commandparser";
 import Response from "../helpers/response";
 import { ShareableUser } from "../helpers/shareableModel";
@@ -7,6 +7,7 @@ import validator from "validator";
 import { useCookies } from "react-cookie";
 import { UserContext, UserType } from "../pages";
 import WhoAmI from "./whoami";
+import { UserAndToken } from "./login";
 
 const { isEmpty } = validator;
 
@@ -18,13 +19,13 @@ export interface SignupData {
 
 export const onSignup: (
   parsedCommand: ParsedCommand
-) => Promise<{ user: ShareableUser; token: string }> = (
+) => Promise<UserAndToken> = (
   parsedCommand: ParsedCommand
-): Promise<{ user: ShareableUser; token: string }> => {
+): Promise<UserAndToken> => {
   const signupData: SignupData = parsedForSignup(parsedCommand);
   return new Promise(
     (
-      resolve: (value: { user: ShareableUser; token: string }) => void,
+      resolve: (value: UserAndToken) => void,
       reject: (reason?: { msg: string; errors: string[] }) => void
     ): void => {
       if (
@@ -59,11 +60,8 @@ usage-
             data: {
               data: { user, token },
             },
-          }: AxiosResponse<
-            { data: { user: ShareableUser; token: string } },
-            any
-          >): void => {
-            const sd: { user: ShareableUser; token: string } = {
+          }: AxiosResponse<{ data: UserAndToken }, any>): void => {
+            const sd: UserAndToken = {
               user: {
                 username: user.username,
                 email: user.email,
@@ -84,7 +82,10 @@ usage-
   );
 };
 
-function SignUp({ user, token }: { user: ShareableUser; token: string }) {
+const SignUp: FC<UserAndToken> = ({
+  user,
+  token,
+}: UserAndToken): JSX.Element => {
   const [, setCookie] = useCookies<"jwt", { jwt: string }>(["jwt"]);
   const [, setUser] = useContext<UserType>(UserContext);
   useEffect((): (() => void) => {
@@ -99,6 +100,6 @@ function SignUp({ user, token }: { user: ShareableUser; token: string }) {
       <WhoAmI userData={user} />
     </div>
   );
-}
+};
 
 export default SignUp;

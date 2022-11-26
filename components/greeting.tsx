@@ -3,15 +3,7 @@ import Banner from "./banner";
 import CommandLink from "./commandLink";
 import Output from "./output";
 
-interface GreetingData {
-  setCommand: Dispatch<SetStateAction<string>>;
-  setCaretPosition: Dispatch<SetStateAction<number>>;
-}
-
-const Greeting: FC<GreetingData> = ({
-  setCommand,
-  setCaretPosition,
-}: GreetingData) => {
+const Greeting: FC = (): JSX.Element => {
   return (
     <Output>
       <div key={-1}>

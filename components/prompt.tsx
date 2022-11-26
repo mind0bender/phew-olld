@@ -1,13 +1,16 @@
-export const Prompt = ({
-  path,
-  username,
-}: {
+import { FC, MutableRefObject, useContext, useRef } from "react";
+import { UserContext } from "../pages";
+
+interface PropmtProps {
   path: string;
-  username: string;
-}) => {
+}
+
+export const Prompt: FC<PropmtProps> = ({ path }: PropmtProps): JSX.Element => {
+  const [{ username }] = useContext(UserContext);
+  const usernmaeWhenCalled: MutableRefObject<string> = useRef<string>(username);
   return (
     <span className="text-teal-300 whitespace-nowrap">
-      {`phew@${username}:${path}$`}
+      {`phew@${usernmaeWhenCalled.current}:${path}$`}
     </span>
   );
 };

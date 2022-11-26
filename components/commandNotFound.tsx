@@ -7,7 +7,7 @@ interface CommandNotFoundData {
 
 const CommandNotFound: FC<CommandNotFoundData> = ({
   command,
-}: CommandNotFoundData) => {
+}: CommandNotFoundData): JSX.Element => {
   return (
     <ErrorComponent
       data={{

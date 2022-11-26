@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 
-const Banner: FC = () => {
+const Banner: FC = (): JSX.Element => {
   return (
     <span className="flex gap-1 sm:text-xs text-[7px] italic select:font-bold">
       <BannerLetter
@@ -39,7 +39,9 @@ interface BannerLetterData {
   letter: string;
 }
 
-const BannerLetter: FC<BannerLetterData> = ({ letter }: BannerLetterData) => {
+const BannerLetter: FC<BannerLetterData> = ({
+  letter,
+}: BannerLetterData): JSX.Element => {
   return (
     <span>
       {[...Array.from(letter.split("\n"))].map(

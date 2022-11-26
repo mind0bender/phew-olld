@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Output from "./output";
 
 const frames: string[] = [
@@ -20,10 +20,11 @@ const frames: string[] = [
   "[  [][][][][][][-]",
 ];
 
-function Processing() {
+const Processing: FC = (): JSX.Element => {
   const [frame, setframe] = useState<number>(0);
+
   useEffect((): (() => void) => {
-    const interval = setInterval((): void => {
+    const interval: NodeJS.Timer = setInterval((): void => {
       setframe((pp: number): number => pp + 1);
     }, 150);
 
@@ -54,6 +55,6 @@ function Processing() {
       </div>
     </Output>
   );
-}
+};
 
 export default Processing;

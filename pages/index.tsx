@@ -66,7 +66,7 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({
   initUser = defaultUser,
   token = "",
-}: HomeProps) => {
+}: HomeProps): JSX.Element => {
   const [command, setCommand] = useState<string>("");
   const cmdInp: MutableRefObject<HTMLInputElement | null> =
     useRef<HTMLInputElement | null>(null);
@@ -83,21 +83,14 @@ const Home: NextPage<HomeProps> = ({
   const [path, setPath] = useState("~");
 
   const [user, setUser] = useState<ShareableUser>(initUser);
-  const [output, setOutput] = useState<ReactNode[]>([
-    <Greeting
-      key={-1}
-      setCaretPosition={setCaretPosition}
-      setCommand={setCommand}
-    />,
-  ]);
+  const [output, setOutput] = useState<ReactNode[]>([<Greeting key={-1} />]);
   const [, setCookies] = useCookies<"jwt", ["jwt"]>(["jwt"]);
 
-  useEffect(() => {
+  useEffect((): (() => void) => {
     if (token) {
       setCookies("jwt", token);
     }
-
-    return () => {};
+    return (): void => {};
   }, [token, setCookies]);
 
   useEffect((): (() => void) => {
@@ -137,7 +130,7 @@ const Home: NextPage<HomeProps> = ({
     setOutput((po: ReactNode[]): ReactNode[] => [
       ...po,
       <div key={po.length} className="flex gap-2">
-        <Prompt path={path} username={username} />
+        <Prompt path={path} />
         <span>{command}</span>
       </div>,
     ]);
@@ -252,7 +245,7 @@ const Home: NextPage<HomeProps> = ({
                 onKeyDown={keyDownHandler}
                 onFocus={focusChangeHandler}
                 onBlur={focusChangeHandler}
-                className="bg-transparent opacity-0 full -translate-x-[99999rem] -z-10 absolute outline-none border-none"
+                className="scale-0 -z-10 absolute outline-none border-none"
                 type="text"
                 value={command}
                 onChange={onChangeHandler}
@@ -274,9 +267,7 @@ const Home: NextPage<HomeProps> = ({
                   isProcessing ? "invisible absolute" : "block"
                 }`}}`}
               >
-                <div className="text-teal-300 max-h-fit whitespace-nowrap">
-                  phew@{user.username}:{path}$
-                </div>
+                <Prompt path={path} />
                 <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
                   {Array.from(command.slice(0, caretPosition)).map(
                     (char: string, idx: number) => (

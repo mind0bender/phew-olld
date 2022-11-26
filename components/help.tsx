@@ -62,11 +62,13 @@ usage-
   },
 };
 
-const Help: React.FC<{ helpForCommand?: string }> = ({
-  helpForCommand = "",
-}: {
+interface HelpProps {
   helpForCommand?: string;
-}) => {
+}
+
+const Help: React.FC<HelpProps> = ({
+  helpForCommand = "",
+}: HelpProps): JSX.Element => {
   if (helpForCommand) {
     return (
       <HelpCommand
@@ -92,15 +94,16 @@ const Help: React.FC<{ helpForCommand?: string }> = ({
 };
 
 export interface CommandData {
+  command: string;
   desc: string;
   details?: string;
 }
 
-const HelpCommand: React.FC<{ command: string } & CommandData> = ({
+const HelpCommand: React.FC<CommandData> = ({
   command,
   desc,
   details,
-}: { command: string } & CommandData) => {
+}: CommandData): JSX.Element => {
   return (
     <div>
       <div className="text-amber-300">{command}</div>

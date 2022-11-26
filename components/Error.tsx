@@ -1,6 +1,10 @@
-import React, { ReactNode } from "react";
+import React, { FC, ReactNode } from "react";
 
-function ErrorComponent({ data }: { data: { msg: string; errors: string[] } }) {
+export interface ErrorData {
+  data: { msg: string; errors: string[] };
+}
+
+const ErrorComponent: FC<ErrorData> = ({ data }: ErrorData): JSX.Element => {
   return (
     <div className="border-l-4 px-2 border-red-800 hover:border-red-700 hover:bg-slate-800 py-2 rounded-sm">
       <div>{data.msg}</div>
@@ -11,6 +15,6 @@ function ErrorComponent({ data }: { data: { msg: string; errors: string[] } }) {
       </div>
     </div>
   );
-}
+};
 
 export default ErrorComponent;
