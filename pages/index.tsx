@@ -26,6 +26,9 @@ import login from "../controllers/auth/login.controller";
 import runCommand from "../helpers/commands";
 import { ShareableUser } from "../helpers/shareableModel";
 import { verify } from "../lib/jwt";
+import validator from "validator";
+
+const { isEmpty } = validator;
 
 export type UserType = [
   ShareableUser,
@@ -41,6 +44,19 @@ export const UserContext: Context<UserType> = createContext<UserType>([
   defaultUser,
   null,
 ]);
+
+export type CommandType = {
+  command: [string, Dispatch<SetStateAction<string>> | null];
+  caretPosition: [number, Dispatch<SetStateAction<number>> | null];
+};
+
+export const defaultCommand: CommandType = {
+  command: ["", null],
+  caretPosition: [0, null],
+};
+
+export const CommandContext: Context<CommandType> =
+  createContext<CommandType>(defaultCommand);
 
 interface HomeProps {
   initUser: ShareableUser;
@@ -204,83 +220,90 @@ const Home: NextPage<HomeProps> = ({
   };
 
   return (
-    <UserContext.Provider value={[user, setUser]}>
-      <Head>
-        <title>{`${user.username}:${path}`}</title>
-      </Head>
-      <div className="flex flex-col w-full h-screen p-2 bg-slate-900 font-extralight font-mono">
-        <div className="flex justify-between rounded-t-md">
-          <div className="bg-slate-800 text-white px-10 py-1 shadow-inner shadow-slate-800 border-t-2 border-x-2 rounded-t-md border-slate-700">
-            some-random-process
-          </div>
-          <div className="grow border-slate-700 border-b-2" />
-          <button
-            title="not yet pink"
-            className="border-b-2 px-2  hover:bg-red-600 border-slate-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
-          >
-            x
-          </button>
-        </div>
-        <label htmlFor="cmdinp" className="flex grow">
-          <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
-            <input
-              id="cmdinp"
-              ref={cmdInp}
-              onKeyUpCapture={keyUpCaptureHandler}
-              onKeyDown={keyDownHandler}
-              onFocus={focusChangeHandler}
-              onBlur={focusChangeHandler}
-              className="bg-transparent opacity-0 full -translate-x-[99999rem] -z-10 absolute outline-none border-none"
-              type="text"
-              value={command}
-              onChange={onChangeHandler}
-            />
-            <div className="flex flex-col gap-1">
-              {output.map((line: ReactNode, idx: number) => {
-                return (
-                  <div
-                    className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900"
-                    key={idx}
-                  >
-                    {line}
-                  </div>
-                );
-              })}
+    <CommandContext.Provider
+      value={{
+        command: [command, setCommand],
+        caretPosition: [caretPosition, setCaretPosition],
+      }}
+    >
+      <UserContext.Provider value={[user, setUser]}>
+        <Head>
+          <title>{`${user.username}:${path}`}</title>
+        </Head>
+        <div className="flex flex-col w-full h-screen p-2 bg-slate-900 font-extralight font-mono">
+          <div className="flex justify-between rounded-t-md">
+            <div className="bg-slate-800 text-white px-10 py-1 shadow-inner shadow-slate-800 border-t-2 border-x-2 rounded-t-md border-slate-700">
+              some-random-process
             </div>
-            <div
-              className={`flex gap-2 max-h-fit items-baseline ${`${
-                isProcessing ? "invisible absolute" : "block"
-              }`}}`}
+            <div className="grow border-slate-700 border-b-2" />
+            <button
+              title="not yet pink"
+              className="border-b-2 px-2  hover:bg-red-600 border-slate-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
             >
-              <div className="text-teal-300 max-h-fit whitespace-nowrap">
-                phew@{user.username}:{path}$
-              </div>
-              <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
-                {Array.from(command.slice(0, caretPosition)).map(
-                  (char: string, idx: number) => (
-                    <span key={idx}>{char}</span>
-                  )
-                )}
-                <span
-                  ref={caret}
-                  className={`h-5 text-gray-200 selection:border-0 border-white border ${
-                    isFocused && "animate-blink"
-                  }`}
-                >
-                  {command[caretPosition] || " "}
-                </span>
-                {Array.from(command.slice(caretPosition + 1)).map(
-                  (char: string, idx: number) => (
-                    <span key={idx}>{char}</span>
-                  )
-                )}
-              </div>
-            </div>
-            {isProcessing && <Processing />}
+              x
+            </button>
           </div>
-        </label>
-      </div>
-    </UserContext.Provider>
+          <label htmlFor="cmdinp" className="flex grow">
+            <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
+              <input
+                id="cmdinp"
+                ref={cmdInp}
+                onKeyUpCapture={keyUpCaptureHandler}
+                onKeyDown={keyDownHandler}
+                onFocus={focusChangeHandler}
+                onBlur={focusChangeHandler}
+                className="bg-transparent opacity-0 full -translate-x-[99999rem] -z-10 absolute outline-none border-none"
+                type="text"
+                value={command}
+                onChange={onChangeHandler}
+              />
+              <div className="flex flex-col gap-1">
+                {output.map((line: ReactNode, idx: number) => {
+                  return (
+                    <div
+                      className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900"
+                      key={idx}
+                    >
+                      {line}
+                    </div>
+                  );
+                })}
+              </div>
+              <div
+                className={`flex gap-2 max-h-fit items-baseline ${`${
+                  isProcessing ? "invisible absolute" : "block"
+                }`}}`}
+              >
+                <div className="text-teal-300 max-h-fit whitespace-nowrap">
+                  phew@{user.username}:{path}$
+                </div>
+                <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
+                  {Array.from(command.slice(0, caretPosition)).map(
+                    (char: string, idx: number) => (
+                      <span key={idx}>{char}</span>
+                    )
+                  )}
+                  <span
+                    ref={caret}
+                    className={`h-5 text-gray-200 selection:border-0 border-white border ${
+                      isFocused && "animate-blink"
+                    }`}
+                  >
+                    {command[caretPosition] || " "}
+                  </span>
+                  {Array.from(command.slice(caretPosition + 1)).map(
+                    (char: string, idx: number) => (
+                      <span key={idx}>{char}</span>
+                    )
+                  )}
+                </div>
+              </div>
+              {isProcessing && <Processing />}
+            </div>
+          </label>
+        </div>
+      </UserContext.Provider>
+    </CommandContext.Provider>
   );
 };
 
@@ -313,7 +336,7 @@ export function getServerSideProps({
       reject: (reason?: any) => void
     ): void => {
       const token: string | undefined = req.cookies.jwt;
-      if (token) {
+      if (token && !isEmpty(token)) {
         verify(token)
           .then(({ _id }: { _id: ObjectId | null }): void => {
             if (_id) {

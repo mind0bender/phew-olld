@@ -1,13 +1,16 @@
 import React, { MutableRefObject, useContext, useEffect, useRef } from "react";
 import { ShareableUser } from "../helpers/shareableModel";
-import { UserContext, UserType } from "../pages";
+import { defaultUser, UserContext, UserType } from "../pages";
+import CommandLink from "./commandLink";
 
 function WhoAmI({ userData }: { userData?: ShareableUser }) {
   const [user] = useContext<UserType>(UserContext);
   let userWhenCalled: MutableRefObject<ShareableUser> = useRef<ShareableUser>(
     userData || user
   );
-  return (
+  return user.username === defaultUser.username ? (
+    <IDKYou />
+  ) : (
     <div className="pl-6 pt-2 max-w-fit">
       <div>+----</div>
       <div className="flex">
@@ -35,5 +38,22 @@ function WhoAmI({ userData }: { userData?: ShareableUser }) {
     </div>
   );
 }
+
+const IDKYou = () => {
+  return (
+    <div>
+      I do not remember you.
+      <br />
+      Do I know you? If yes then please{" "}
+      <CommandLink command="login /<username>/<password>">
+        login
+      </CommandLink>{" "}
+      else{" "}
+      <CommandLink command="signup /<username>/<password>/<email>">
+        signup
+      </CommandLink>
+    </div>
+  );
+};
 
 export default WhoAmI;

@@ -1,5 +1,6 @@
 import React, { Dispatch, FC, SetStateAction } from "react";
 import Banner from "./banner";
+import CommandLink from "./commandLink";
 import Output from "./output";
 
 interface GreetingData {
@@ -18,17 +19,7 @@ const Greeting: FC<GreetingData> = ({
           Welcome to <span className="text-teal-300">PHEW</span>
         </div>
         <div>
-          Type{" "}
-          <span
-            onClick={() => {
-              setCommand("help");
-              setCaretPosition(4);
-            }}
-            className="text-amber-300 underline hover:bg-slate-800 hover:ring ring-slate-800 shadow-sm cursor-pointer rounded-sm px-1 py-0.5 duration-100"
-          >
-            [help]
-          </span>{" "}
-          for more info
+          Type <CommandLink command="help">help</CommandLink> for more info
         </div>
       </div>
       <br />
