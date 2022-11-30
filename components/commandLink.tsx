@@ -19,16 +19,20 @@ const CommandLink: ({
     caretPosition: [, setCaretPosition],
   } = useContext(CommandContext);
   return (
-    <span
-      onClick={(): void => {
-        if (setCommand && setCaretPosition) {
-          setCommand(command);
-          setCaretPosition(command.length);
-        }
-      }}
-      className="text-amber-300 underline hover:bg-slate-800 hover:ring ring-slate-800 shadow-sm cursor-pointer rounded-sm px-1 py-0.5 duration-100"
-    >
-      [{children}]
+    <span className="hover:bg-slate-800 hover:ring ring-slate-800 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100">
+      [
+      <span
+        onClick={(): void => {
+          if (setCommand && setCaretPosition) {
+            setCommand(command);
+            setCaretPosition(command.length);
+          }
+        }}
+        className="text-amber-300 underline "
+      >
+        {children}
+      </span>
+      ]
     </span>
   );
 };

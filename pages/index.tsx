@@ -27,6 +27,7 @@ import runCommand from "../helpers/commands";
 import { ShareableUser } from "../helpers/shareableModel";
 import { verify } from "../lib/jwt";
 import validator from "validator";
+import CommandWithCaret from "../components/commandWithCaret";
 
 const { isEmpty } = validator;
 
@@ -64,8 +65,8 @@ interface HomeProps {
 }
 
 const Home: NextPage<HomeProps> = ({
-  initUser = defaultUser,
-  token = "",
+  initUser,
+  token,
 }: HomeProps): JSX.Element => {
   const [command, setCommand] = useState<string>("");
   const cmdInp: MutableRefObject<HTMLInputElement | null> =
@@ -268,26 +269,7 @@ const Home: NextPage<HomeProps> = ({
                 }`}}`}
               >
                 <Prompt path={path} />
-                <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
-                  {Array.from(command.slice(0, caretPosition)).map(
-                    (char: string, idx: number) => (
-                      <span key={idx}>{char}</span>
-                    )
-                  )}
-                  <span
-                    ref={caret}
-                    className={`h-5 text-gray-200 selection:border-0 border-white border ${
-                      isFocused && "animate-blink"
-                    }`}
-                  >
-                    {command[caretPosition] || " "}
-                  </span>
-                  {Array.from(command.slice(caretPosition + 1)).map(
-                    (char: string, idx: number) => (
-                      <span key={idx}>{char}</span>
-                    )
-                  )}
-                </div>
+                <CommandWithCaret isFocused={isFocused} ref={caret} />
               </div>
               {isProcessing && <Processing />}
             </div>

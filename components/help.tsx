@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
+import CommandLink from "./commandLink";
 
-interface CommandsData {
+export interface CommandsData {
   [key: string]: {
     desc: string;
     details?: string;
@@ -11,26 +12,26 @@ const commands: CommandsData = {
   help: {
     desc: `don't know what to do? IDK either [jk, ofc IK]
     try \`help help\` for more info`,
-    details: `Know what you want about any command
+    details: `get to know about any command
 usage-
     help <command>`,
   },
   whoami: {
-    desc: `memory loss? print the username.`,
+    desc: `print the username in case of memory loss.`,
     details: `    print the username and email of the current user
 usage-
     whoami`,
   },
   about: {
-    desc: "do you know me? No, you don't",
+    desc: "What is a phew?",
     details: ``,
   },
   banner: {
-    desc: "see a flashy entry",
+    desc: "see a flashy banner",
     details: ``,
   },
   cat: {
-    desc: "print the content of a file",
+    desc: "print the content of a phew",
     details: ``,
   },
   getcool: {
@@ -38,22 +39,32 @@ usage-
     details: ``,
   },
   signup: {
-    desc: "create your phew",
-    details: `    user : \`username\` of the account,
+    desc: "create an account",
+    details: `    create a new Phew account
+
+    user : \`username\` of the account,
     pswd : \`password\` of the account,
     email: \`email\` of the account,
             
 usage-
     signup /<username>/<password>/<email>
     or
-    signup /?user=<username>&pswd=<password>&email=<email></email>`,
+    signup /?user=<username>&pswd=<password>&email=<email>`,
   },
   login: {
-    desc: "who are you again?",
-    details: ``,
+    desc: "login to a preexisting account",
+    details: `    create a new Phew account
+
+    user : \`username\` of the account,
+    pswd : \`password\` of the account,
+            
+usage-
+    login /<username>/<password>
+    or
+    login /?user=<username>&pswd=<password>`,
   },
   ls: {
-    desc: "list all files and directory",
+    desc: "list all phews",
     details: ``,
   },
   clear: {
@@ -106,7 +117,7 @@ const HelpCommand: React.FC<CommandData> = ({
 }: CommandData): JSX.Element => {
   return (
     <div>
-      <div className="text-amber-300">{command}</div>
+      <CommandLink command={command}>{command}</CommandLink>
       <div className="pl-6 text-white">
         <div>- {desc}</div>
         {details && <div>{details}</div>}

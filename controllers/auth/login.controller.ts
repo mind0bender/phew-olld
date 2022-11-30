@@ -1,40 +1,31 @@
 import { isObjectIdOrHexString, ObjectId } from "mongoose";
 import user, { UserInterface } from "../../database/models/user";
 import Response from "../../helpers/response";
-import { shareableUser, ShareableUser } from "../../helpers/shareableModel";
+import { shareableUser } from "../../helpers/shareableModel";
 import dbConnect from "../../lib/dbconnect";
 import validator from "validator";
 import { sign } from "../../lib/jwt";
 const { isEmpty } = validator;
 
-const login: ({
-  _id,
-  username,
-  password,
-}: {
+export interface loginControllerData {
   _id?: string;
   username?: string;
   password?: string;
-}) => Promise<{
+}
+
+const login: ({ _id, username, password }: loginControllerData) => Promise<{
   data: Response;
   status: number;
 }> = ({
   _id,
   username,
   password,
-}: {
-  _id?: string;
-  username?: string;
-  password?: string;
-}): Promise<{
+}: loginControllerData): Promise<{
   data: Response;
   status: number;
 }> => {
   return new Promise(
-    (
-      resolve: (value: { data: Response; status: number }) => void,
-      reject: (reason?: any) => void
-    ): void => {
+    (resolve: (value: { data: Response; status: number }) => void): void => {
       dbConnect()
         .then((): void => {
           if (isObjectIdOrHexString(_id)) {
@@ -140,7 +131,7 @@ const login: ({
                         .findById(doc._id)
                         .then((userDoc: UserInterface): void => {
                           userDoc
-                            .validatePassword(password || "")
+                            .validatePassword(password!)
                             .then((isMatched: boolean): void => {
                               if (!isMatched) {
                                 return resolve({
