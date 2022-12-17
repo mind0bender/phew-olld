@@ -78,10 +78,6 @@ const Editor: FC<EditorInterface> = ({
                 {Array.from(line).map((char: string, charIdx: number) => {
                   return (
                     <>
-                      {charIdx + startIdx == editorData.selection[0] - 1 &&
-                        charIdx + startIdx == editorData.selection[1] - 1 && (
-                          <span className="ring-1 ring-theme-400" />
-                        )}
                       <span
                         className={`bg-opacity-40 py-0.5 ${
                           charIdx + startIdx + (lineIdx ? 2 : 1) >
@@ -103,8 +99,15 @@ const Editor: FC<EditorInterface> = ({
                         }`}
                         key={charIdx + startIdx + 1}
                       >
-                        {char || startIdx + ""}
+                        {char}
                       </span>
+
+                      {charIdx + startIdx ==
+                        editorData.selection[0] - (lineIdx ? 2 : 1) &&
+                        charIdx + startIdx ==
+                          editorData.selection[1] - (lineIdx ? 2 : 1) && (
+                          <span className="ring-1 ring-theme-400" />
+                        )}
                     </>
                   );
                 })}
