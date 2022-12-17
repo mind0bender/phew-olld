@@ -9,8 +9,8 @@ export const Prompt: FC<PropmtProps> = ({ path }: PropmtProps): JSX.Element => {
   const [{ username }] = useContext(UserContext);
   const usernmaeWhenCalled: MutableRefObject<string> = useRef<string>(username);
   return (
-    <span className="text-teal-300 whitespace-nowrap">
-      {`phew@${usernmaeWhenCalled.current}:${path}$`}
+    <span className="text-theme-400 whitespace-nowrap">
+      {`phew@${usernmaeWhenCalled.current}${path} >`}
     </span>
   );
 };

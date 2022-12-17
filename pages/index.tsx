@@ -28,6 +28,7 @@ import { ShareableUser } from "../helpers/shareableModel";
 import { verify } from "../lib/jwt";
 import validator from "validator";
 import CommandWithCaret from "../components/commandWithCaret";
+import Editor from "../components/editor";
 
 const { isEmpty } = validator;
 
@@ -81,11 +82,13 @@ const Home: NextPage<HomeProps> = ({
   const [prevCommands, setPrevCommands] = useState<string[]>([]);
   const [prevCommandsIdx, setPrevCommandsIdx] = useState<number>(-1);
 
-  const [path, setPath] = useState("~");
+  const [path, setPath] = useState("/");
 
   const [user, setUser] = useState<ShareableUser>(initUser);
   const [output, setOutput] = useState<ReactNode[]>([<Greeting key={-1} />]);
   const [, setCookies] = useCookies<"jwt", ["jwt"]>(["jwt"]);
+
+  const [isEditorWindow, setIsEditorWindow] = useState<boolean>(false);
 
   useEffect((): (() => void) => {
     if (token) {
@@ -110,10 +113,10 @@ const Home: NextPage<HomeProps> = ({
 
   useEffect((): (() => void) => {
     caret.current?.scrollIntoView({
-      behavior: "auto",
+      behavior: "smooth",
     });
     return (): void => {};
-  }, [output]);
+  }, [output, command]);
 
   useEffect((): (() => void) => {
     if (prevCommandsIdx == -1) {
@@ -125,8 +128,7 @@ const Home: NextPage<HomeProps> = ({
   }, [prevCommandsIdx, prevCommands]);
 
   const addPromptToOutput: (path: string, username: string) => void = (
-    path: string,
-    username: string
+    path: string
   ): void => {
     setOutput((po: ReactNode[]): ReactNode[] => [
       ...po,
@@ -222,58 +224,98 @@ const Home: NextPage<HomeProps> = ({
     >
       <UserContext.Provider value={[user, setUser]}>
         <Head>
-          <title>{`${user.username}:${path}`}</title>
+          <title>PHEW</title>
+          <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/favicons/apple-touch-icon.png"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/favicons/favicon-32x32.png"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="/favicons/favicon-16x16.png"
+          />
+          <link rel="manifest" href="/favicons/site.webmanifest" />
+          <link
+            rel="mask-icon"
+            href="/favicons/safari-pinned-tab.svg"
+            color="#5bbad5"
+          />
+          <meta name="msapplication-TileColor" content="#ffc40d" />
+          <meta name="theme-color" content="#ffffff" />
         </Head>
-        <div className="flex flex-col w-full h-screen p-2 bg-slate-900 font-extralight font-mono">
+        <div className="flex flex-col w-full h-screen p-2 bg-primary font-extralight font-mono">
           <div className="flex justify-between rounded-t-md">
-            <div className="bg-slate-800 text-white px-10 py-1 shadow-inner shadow-slate-800 border-t-2 border-x-2 rounded-t-md border-slate-700">
+            <div className="bg-secondary text-white px-10 py-1 shadow-inner shadow-secondary-800 border-t-2 border-x-2 rounded-t-md border-secondary-700">
               some-random-process
             </div>
-            <div className="grow border-slate-700 border-b-2" />
+            <div className="grow border-secondary-700 border-b-2" />
             <button
               title="not yet pink"
-              className="border-b-2 px-2  hover:bg-red-600 border-slate-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
+              className="border-b-2 px-2  hover:bg-red-600 border-secondary-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
+              onClick={() => {
+                // pink; toggling editor for now
+                setIsEditorWindow((iew) => !iew);
+              }}
             >
               x
             </button>
           </div>
-          <label htmlFor="cmdinp" className="flex grow">
-            <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-slate-700">
-              <input
-                id="cmdinp"
-                ref={cmdInp}
-                onKeyUpCapture={keyUpCaptureHandler}
-                onKeyDown={keyDownHandler}
-                onFocus={focusChangeHandler}
-                onBlur={focusChangeHandler}
-                className="scale-0 -z-10 absolute outline-none border-none"
-                type="text"
-                value={command}
-                onChange={onChangeHandler}
-              />
-              <div className="flex flex-col gap-1">
-                {output.map((line: ReactNode, idx: number) => {
-                  return (
-                    <div
-                      className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900"
-                      key={idx}
-                    >
-                      {line}
-                    </div>
-                  );
-                })}
+          <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-secondary-700">
+            {/* cli tab */}
+            <label
+              htmlFor="cmdinp"
+              className={`flex grow ${isEditorWindow && "hidden"}`}
+            >
+              <div className="">
+                <input
+                  id="cmdinp"
+                  ref={cmdInp}
+                  onKeyUpCapture={keyUpCaptureHandler}
+                  onKeyDown={keyDownHandler}
+                  onFocus={focusChangeHandler}
+                  onBlur={focusChangeHandler}
+                  className="scale-0 -z-10 absolute outline-none border-none"
+                  type="text"
+                  value={command}
+                  onChange={onChangeHandler}
+                />
+                <div className="flex flex-col gap-1">
+                  {output.map((line: ReactNode, idx: number) => {
+                    return (
+                      <div
+                        className="text-gray-200 whitespace-pre-wrap break-all themed-selection"
+                        key={idx}
+                      >
+                        {line}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div
+                  className={`flex gap-2 max-h-fit items-baseline ${`${
+                    isProcessing ? "invisible absolute" : "block"
+                  }`}}`}
+                >
+                  <Prompt path={path} />
+                  <CommandWithCaret isFocused={isFocused} ref={caret} />
+                </div>
+                {isProcessing && <Processing />}
+                {/* pink; editor testing */}
+                {/* <Editor initCode="// write your code here" /> */}
               </div>
-              <div
-                className={`flex gap-2 max-h-fit items-baseline ${`${
-                  isProcessing ? "invisible absolute" : "block"
-                }`}}`}
-              >
-                <Prompt path={path} />
-                <CommandWithCaret isFocused={isFocused} ref={caret} />
-              </div>
-              {isProcessing && <Processing />}
-            </div>
-          </label>
+            </label>
+            {/* cli ends */}
+            {/* editor component */}
+            <Editor open={isEditorWindow} initContent="// start your phew" />
+          </div>
         </div>
       </UserContext.Provider>
     </CommandContext.Provider>

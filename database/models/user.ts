@@ -1,5 +1,6 @@
 import { Document, model, models, Schema } from "mongoose";
 import { compare, genSalt, hash } from "bcrypt";
+
 const SALT_WORK_FACTOR = 10;
 
 export interface UserInterface extends Document {

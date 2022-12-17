@@ -8,7 +8,7 @@ const Greeting: FC = (): JSX.Element => {
     <Output>
       <div key={-1}>
         <div>
-          Welcome to <span className="text-teal-300">PHEW</span>
+          Welcome to <span className="text-theme-400">PHEW</span>
         </div>
         <div>
           Type <CommandLink command="help">help</CommandLink> for more info

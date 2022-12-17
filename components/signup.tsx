@@ -2,12 +2,12 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import React, { FC, useContext, useEffect } from "react";
 import { ParsedCommand, parsedForSignup } from "../helpers/commandparser";
 import Response from "../helpers/response";
-import { ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
 import { useCookies } from "react-cookie";
 import { UserContext, UserType } from "../pages";
 import WhoAmI from "./whoami";
 import { UserAndToken } from "./login";
+import CommandWithCaret from "./commandWithCaret";
 
 const { isEmpty } = validator;
 

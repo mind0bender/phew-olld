@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -6,7 +8,13 @@ module.exports = {
   ],
   theme: {
     extend: {
-      animation: { blink: "blink 1.5s step-end infinite" },
+      colors: {
+        theme: colors.emerald,
+        primary: "#000000",
+        secondary: colors.zinc,
+        error: colors.red,
+      },
+      animation: { blink: "blink 1s step-end infinite" },
     },
   },
   plugins: [],

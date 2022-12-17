@@ -10,8 +10,7 @@ export interface CommandsData {
 
 const commands: CommandsData = {
   help: {
-    desc: `don't know what to do? IDK either [jk, ofc IK]
-    try \`help help\` for more info`,
+    desc: `don't know what to do? IDK either [jk, ofc IK]`,
     details: `get to know about any command
 usage-
     help <command>`,
@@ -23,12 +22,12 @@ usage-
     whoami`,
   },
   about: {
-    desc: "What is a phew?",
-    details: ``,
+    desc: "what is a phew?",
+    details: `understand what a \`phew\` is and how you can use it to your advantage in daily life`,
   },
   banner: {
     desc: "see a flashy banner",
-    details: ``,
+    details: `see PHEW header`,
   },
   cat: {
     desc: "print the content of a phew",
@@ -64,7 +63,7 @@ usage-
     login /?user=<username>&pswd=<password>`,
   },
   ls: {
-    desc: "list all phews",
+    desc: "list all collections and phews",
     details: ``,
   },
   clear: {
@@ -72,6 +71,8 @@ usage-
     details: ``,
   },
 };
+
+//  pink; pwd
 
 interface HelpProps {
   helpForCommand?: string;
@@ -91,6 +92,7 @@ const Help: React.FC<HelpProps> = ({
   }
   return (
     <div>
+      <div className="pb-2">try `help &lt;command&gt;` for more info</div>
       {Object.keys(commands).map((command: string, idx: number): ReactNode => {
         return (
           <HelpCommand
@@ -117,7 +119,9 @@ const HelpCommand: React.FC<CommandData> = ({
 }: CommandData): JSX.Element => {
   return (
     <div>
-      <CommandLink command={command}>{command}</CommandLink>
+      <CommandLink className="cursor-help" command={command}>
+        {command}
+      </CommandLink>
       <div className="pl-6 text-white">
         <div>- {desc}</div>
         {details && <div>{details}</div>}

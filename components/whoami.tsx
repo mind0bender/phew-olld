@@ -33,7 +33,7 @@ const WhoAmI: FC<WhoAmIProps> = ({ userData }: WhoAmIProps): JSX.Element => {
           <div className="flex gap-2">
             <div>email{"   :"}</div>
             <a
-              className="underline decoration-solid hover:decoration-2 decoration-slate-600"
+              className="underline decoration-solid hover:decoration-2 decoration-secondary-700"
               target="_blank"
               rel="noreferrer"
               href={`mailto:${userWhenCalled.current.email}`}

@@ -14,6 +14,7 @@ const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
 ): Promise<ReactNode> => {
   const cmd: string = command.trim();
+  console.log(cmd);
   return new Promise(
     (
       resolve: (value: ReactNode) => void,
@@ -92,7 +93,7 @@ const runCommand: (command: string) => Promise<ReactNode> = (
         default:
           resolve(
             <Output>
-              <CommandNotFound command={command} />
+              <CommandNotFound command={parsedCommand.command} />
             </Output>
           );
           break;

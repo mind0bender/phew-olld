@@ -21,7 +21,7 @@ const CommandWithCaret: ForwardRefExoticComponent<CommandWithCaretProps> =
         caretPosition: [caretPosition],
       } = useContext(CommandContext);
       return (
-        <div className="text-gray-200 whitespace-pre-wrap break-all selection:bg-teal-500 selection:text-slate-900">
+        <div className="text-gray-200 whitespace-pre-wrap break-all themed-selection">
           {Array.from(command.slice(0, caretPosition)).map(
             (char: string, idx: number): JSX.Element => (
               <span key={idx}>{char}</span>

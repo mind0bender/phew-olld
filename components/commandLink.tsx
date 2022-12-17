@@ -1,25 +1,30 @@
-import { ReactNode, useContext } from "react";
+import {
+  FC,
+  HTMLAttributes,
+  PropsWithChildren,
+  ReactNode,
+  useContext,
+} from "react";
 import { CommandContext } from "../pages";
 
-const CommandLink: ({
+interface CommandLinkProps extends HTMLAttributes<HTMLSpanElement> {
+  command: string;
+}
+
+const CommandLink: FC<CommandLinkProps> = ({
   children,
   command,
-}: {
-  command: string;
-  children: ReactNode;
-}) => JSX.Element = ({
-  children,
-  command,
-}: {
-  children: ReactNode;
-  command: string;
-}): JSX.Element => {
+  ...props
+}: CommandLinkProps): JSX.Element => {
   const {
     command: [, setCommand],
     caretPosition: [, setCaretPosition],
   } = useContext(CommandContext);
   return (
-    <span className="hover:bg-slate-800 hover:ring ring-slate-800 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100">
+    <span
+      {...props}
+      className={`hover:bg-slate-800 hover:ring ring-slate-800 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100 ${props.className}`}
+    >
       [
       <span
         onClick={(): void => {

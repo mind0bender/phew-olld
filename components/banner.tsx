@@ -2,7 +2,7 @@ import React, { FC, ReactNode } from "react";
 
 const Banner: FC = (): JSX.Element => {
   return (
-    <span className="flex gap-1 sm:text-xs text-[7px] italic select:font-bold">
+    <span className="flex gap-1 sm:text-xs text-[7px] italic">
       <BannerLetter
         letter={`/********* 
   /**   /**
@@ -43,7 +43,7 @@ const BannerLetter: FC<BannerLetterData> = ({
   letter,
 }: BannerLetterData): JSX.Element => {
   return (
-    <span>
+    <span className="font-black">
       {[...Array.from(letter.split("\n"))].map(
         (line: string, idx1: number): ReactNode => {
           return (
