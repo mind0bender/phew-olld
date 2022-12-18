@@ -170,6 +170,7 @@ const Home: NextPage<HomeProps> = ({
         })
         .finally((): void => {
           setIsProcessing(false);
+          setCommand("");
         });
       return;
     }
@@ -253,7 +254,7 @@ const Home: NextPage<HomeProps> = ({
         </Head>
         <div className="flex flex-col w-full h-screen p-2 bg-primary font-extralight font-mono">
           <div className="flex justify-between rounded-t-lg">
-            <div className="bg-secondary-900 text-white px-10 py-1 border-t-2 border-x-2 rounded-t-lg border-secondary-700">
+            <div className="bg-secondary-900 select-none text-white px-10 py-1 border-t-2 border-x-2 rounded-t-lg border-secondary-700">
               some-random-process
             </div>
             <div className="grow border-secondary-700 border-b-2" />
