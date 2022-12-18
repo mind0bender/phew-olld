@@ -6,7 +6,7 @@ import Output from "./output";
 const Greeting: FC = (): JSX.Element => {
   return (
     <Output>
-      <div key={-1}>
+      <div>
         <div>
           Welcome to <span className="text-theme-400">PHEW</span>
         </div>

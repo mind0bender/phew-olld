@@ -16,7 +16,7 @@ usage-
     help <command>`,
   },
   whoami: {
-    desc: `print the username in case of memory loss.`,
+    desc: `print the user's info in case of memory loss.`,
     details: `    print the username and email of the current user
 usage-
     whoami`,

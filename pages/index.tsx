@@ -252,29 +252,31 @@ const Home: NextPage<HomeProps> = ({
           <meta name="theme-color" content="#ffffff" />
         </Head>
         <div className="flex flex-col w-full h-screen p-2 bg-primary font-extralight font-mono">
-          <div className="flex justify-between rounded-t-md">
-            <div className="bg-secondary text-white px-10 py-1 shadow-inner shadow-secondary-800 border-t-2 border-x-2 rounded-t-md border-secondary-700">
+          <div className="flex justify-between rounded-t-lg">
+            <div className="bg-secondary-900 text-white px-10 py-1 border-t-2 border-x-2 rounded-t-lg border-secondary-700">
               some-random-process
             </div>
             <div className="grow border-secondary-700 border-b-2" />
             <button
               title="not yet pink"
-              className="border-b-2 px-2  hover:bg-red-600 border-secondary-700 text-white text-2xl aspect-square rounded-tr-md duration-150"
-              onClick={() => {
+              className="border-b-2 px-2  hover:bg-red-600 border-secondary-700 text-white text-2xl aspect-square rounded-tr-lg duration-150"
+              onClick={(): void => {
                 // pink; toggling editor for now
-                setIsEditorWindow((iew) => !iew);
+                setIsEditorWindow((iew: boolean): boolean => !iew);
               }}
             >
               x
             </button>
           </div>
-          <div className="grow cursor-text h-[calc(100vh-3.5rem)] overflow-y-scroll scrollbar rounded-b-md p-2 border-x-2 border-b-2 border-secondary-700">
+          <div className="grow cursor-text bg-secondary-900 h-[calc(100vh-3.5rem)] scrollbar rounded-b-lg p-1 border-x-2 border-b-2 border-secondary-700">
             {/* cli tab */}
             <label
               htmlFor="cmdinp"
-              className={`flex grow ${isEditorWindow && "hidden"}`}
+              className={`flex group h-full w-full ${
+                isEditorWindow && "hidden"
+              }`}
             >
-              <div className="">
+              <div className="w-full border border-secondary-700 overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-md bg-primary text-white px-2">
                 <input
                   id="cmdinp"
                   ref={cmdInp}
@@ -282,7 +284,7 @@ const Home: NextPage<HomeProps> = ({
                   onKeyDown={keyDownHandler}
                   onFocus={focusChangeHandler}
                   onBlur={focusChangeHandler}
-                  className="scale-0 -z-10 absolute outline-none border-none"
+                  className="scale-0 absolute"
                   type="text"
                   value={command}
                   onChange={onChangeHandler}
@@ -314,7 +316,10 @@ const Home: NextPage<HomeProps> = ({
             </label>
             {/* cli ends */}
             {/* editor component */}
-            <Editor open={isEditorWindow} initContent="// start your phew" />
+            <Editor
+              open={isEditorWindow}
+              placeholder={"// start your phew here."}
+            />
           </div>
         </div>
       </UserContext.Provider>

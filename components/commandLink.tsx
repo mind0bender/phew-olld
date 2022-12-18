@@ -23,7 +23,7 @@ const CommandLink: FC<CommandLinkProps> = ({
   return (
     <span
       {...props}
-      className={`hover:bg-slate-800 hover:ring ring-slate-800 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100 ${props.className}`}
+      className={`hover:bg-secondary-800 hover:ring ring-secondary-700 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100 ${props.className}`}
     >
       [
       <span

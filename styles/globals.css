@@ -4,19 +4,19 @@
 
 @layer base {
   .scrollbar::-webkit-scrollbar {
-    @apply w-2 rounded-br;
+    @apply w-2 rounded-r;
   }
 
   .scrollbar::-webkit-scrollbar-track {
-    @apply bg-secondary-800 rounded-br;
+    @apply bg-secondary-800 rounded-r;
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-secondary-700 rounded-br;
+    @apply bg-secondary-700 rounded-r;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-secondary-700 rounded-br;
+    @apply bg-secondary-700 rounded-r;
   }
   *::selection {
     @apply bg-theme-400 bg-opacity-40 rounded-md text-white;
