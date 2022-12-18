@@ -19,7 +19,6 @@ interface EditorInterface {
 
 interface EditorData {
   selection: [number, number];
-  scrollY: number;
 }
 
 const Editor: FC<EditorInterface> = ({
@@ -38,7 +37,6 @@ const Editor: FC<EditorInterface> = ({
 
   const [editorData, setEditorData] = useState<EditorData>({
     selection: [0, 0],
-    scrollY: 0,
   });
 
   const onChange: ChangeEventHandler = (
@@ -62,28 +60,31 @@ const Editor: FC<EditorInterface> = ({
   const onScroll: UIEventHandler<HTMLTextAreaElement> = (
     e: UIEvent<HTMLTextAreaElement>
   ): void => {
-    editorDisplay.current?.scrollTo(0, editorTextArea.current?.scrollTop || 0);
+    editorDisplay.current?.scrollTo(
+      editorTextArea.current?.scrollLeft || 0,
+      editorTextArea.current?.scrollTop || 0
+    );
   };
 
   return open ? (
     <div className={`flex space-x-4 h-full text-white ${!open && "hidden"}`}>
-      <div className="group relative w-full h-full">
+      <div className="relative w-full h-full">
         <div
           ref={editorDisplay}
-          className="absolute w-full overflow-y-auto break-all h-full grow top-0 left-0 whitespace-pre-wrap scrollbar rounded-md bg-primary border-secondary-800 group-focus-within:border-secondary-700  border-2 text-white py-1 px-3"
+          className="absolute w-full overflow-auto h-full grow top-0 left-0 whitespace-pre scrollbar rounded-md bg-primary border-secondary-800 group-focus-within:border-secondary-700  border-2 text-white py-1"
         >
           {content ? (
-            <span className="flex divide-x-2 divide-secondary-800">
-              <span className="pr-2">
+            <span className="flex">
+              <span className="px-2 bg-primary border-r border-secondary-800 sticky left-0">
                 {content
                   .split("\n")
                   .map((line: string, lineIdx: number): JSX.Element => {
                     return (
                       <div
-                        className="text-end text-secondary-400"
+                        className="text-end flex whitespace-nowrap text-secondary-400"
                         key={lineIdx}
                       >
-                        {lineIdx}
+                        {lineIdx + 1}
                       </div>
                     );
                   })}
@@ -192,16 +193,16 @@ const Editor: FC<EditorInterface> = ({
           )}
         </div>
         <span
-          className="flex
-          divide-x-2 
-        px-4 peer w-full bg-black text-pink-300 opacity-0 h-full absolute top-0 left-0 scrollbar outline-none py-1"
+          className="
+           opacity-0
+          flex divide-x-2 pl-3 pt-0.5 peer w-full bg-black text-pink-300 h-full absolute top-0 left-0 scrollbar outline-none"
         >
-          <span className="pr-1">{content.split("\n").length}</span>
+          <span className="pr-2 flex">{content.split("\n").length}</span>
           <textarea
             onScroll={onScroll}
             onSelect={onSelect}
             ref={editorTextArea}
-            className="editor px-1 peer bg-black pl-2 pt-1 w-full break-all h-full scrollbar "
+            className="editor px-1 peer whitespace-pre bg-black pl-min-2 pt-1 w-full h-full scrollbar "
             spellCheck={false}
             value={content}
             onChange={onChange}
