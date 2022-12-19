@@ -307,7 +307,7 @@ const Home: NextPage<HomeProps> = ({
                     isProcessing ? "invisible absolute" : "block"
                   }`}}`}
                 >
-                  <Prompt path={path} />
+                  <Prompt path={path} whenCalledUser={false} />
                   <CommandWithCaret isFocused={isFocused} ref={caret} />
                 </div>
                 {isProcessing && <Processing />}

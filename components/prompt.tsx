@@ -3,14 +3,20 @@ import { UserContext } from "../pages";
 
 interface PropmtProps {
   path: string;
+  whenCalledUser?: boolean;
 }
 
-export const Prompt: FC<PropmtProps> = ({ path }: PropmtProps): JSX.Element => {
+export const Prompt: FC<PropmtProps> = ({
+  path,
+  whenCalledUser = true,
+}: PropmtProps): JSX.Element => {
   const [{ username }] = useContext(UserContext);
   const usernmaeWhenCalled: MutableRefObject<string> = useRef<string>(username);
   return (
     <span className="text-theme-400 whitespace-nowrap">
-      {`phew@${usernmaeWhenCalled.current}${path} >`}
+      {`phew@${
+        whenCalledUser ? usernmaeWhenCalled.current : username
+      }${path} >`}
     </span>
   );
 };
