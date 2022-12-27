@@ -1,7 +1,7 @@
 import { ShareableUser } from "../helpers/shareableModel";
 import validator from "validator";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import Response from "../helpers/response";
+import Response, { ResponseData } from "../helpers/response";
 import { useContext, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { UserContext, UserType } from "../pages";
@@ -61,7 +61,7 @@ usage-
             resolve({ user: sd, token });
           }
         )
-        .catch((resWithErr: AxiosError<Response>): void => {
+        .catch((resWithErr: AxiosError<ResponseData<undefined>>): void => {
           const dataWithErr: { msg: string; errors: string[] } = {
             msg: resWithErr.response?.data.msg || "",
             errors: resWithErr.response?.data.errors || [],
