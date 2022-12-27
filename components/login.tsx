@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { UserContext, UserType } from "../pages";
 import WhoAmI from "./whoami";
+import { ErrorData } from "./Error";
 
 const { isEmpty } = validator;
 export interface LoginData {
@@ -24,7 +25,7 @@ export const onLogin: (loginData: LoginData) => Promise<UserAndToken> = (
   return new Promise<UserAndToken>(
     (
       resolve: (value: UserAndToken) => void,
-      reject: (reason?: { msg: string; errors: string[] }) => void
+      reject: (reason?: ErrorData) => void
     ): void => {
       if (isEmpty(loginData.user) && isEmpty(loginData.pswd)) {
         reject({

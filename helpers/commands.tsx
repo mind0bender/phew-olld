@@ -6,16 +6,16 @@ import Output from "../components/output";
 import Signup, { onSignup } from "../components/signup";
 import parseCommand, { ParsedCommand, parsedForLogin } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
-import ErrorComponent from "../components/Error";
+import ErrorComponent, { ErrorData } from "../components/Error";
 import Login, { LoginData, onLogin } from "../components/login";
 import WhoAmI from "../components/whoami";
+import VideoPlayer from "../components/videoPlayer";
 
 const runCommand: (command: string) => Promise<ReactNode> = (
   command: string
 ): Promise<ReactNode> => {
   const cmd: string = command.trim();
-  console.log(cmd);
-  return new Promise(
+  return new Promise<ReactNode>(
     (
       resolve: (value: ReactNode) => void,
       reject: ({ clear = false, err }: { clear?: boolean; err?: any }) => void
@@ -60,11 +60,11 @@ const runCommand: (command: string) => Promise<ReactNode> = (
                 </Output>
               );
             })
-            .catch((dataWithErr: { msg: string; errors: string[] }) => {
+            .catch((errorData: ErrorData): void => {
               reject({
                 err: (
                   <Output>
-                    <ErrorComponent data={dataWithErr} />
+                    <ErrorComponent {...errorData} />
                   </Output>
                 ),
               });
@@ -73,23 +73,40 @@ const runCommand: (command: string) => Promise<ReactNode> = (
         case "login":
           const loginData: LoginData = parsedForLogin(parsedCommand);
           onLogin(loginData)
-            .then(({ user, token }: { user: ShareableUser; token: string }) => {
-              resolve(
-                <Output>
-                  <Login user={user} token={token} />
-                </Output>
-              );
-            })
-            .catch((dataWithErr: { msg: string; errors: string[] }) => {
+            .then(
+              ({
+                user,
+                token,
+              }: {
+                user: ShareableUser;
+                token: string;
+              }): void => {
+                resolve(
+                  <Output>
+                    <Login user={user} token={token} />
+                  </Output>
+                );
+              }
+            )
+            .catch((errorData: ErrorData): void => {
               reject({
                 err: (
                   <Output>
-                    <ErrorComponent data={dataWithErr} />
+                    <ErrorComponent {...errorData} />
                   </Output>
                 ),
               });
             });
           break;
+        case "getcool":
+          resolve(
+            <VideoPlayer
+              src={"https://shattereddisk.github.io/rickroll/rickroll.mp4"}
+              title={"This should be a good lesson"}
+              autoPlay
+              autoFullscreen
+            />
+          );
         default:
           resolve(
             <Output>

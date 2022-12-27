@@ -7,7 +7,7 @@ const { isEmpty } = validator;
 export function middleware(
   req: NextRequest & { issignin: boolean }
 ): Promise<NextResponse> {
-  return new Promise(
+  return new Promise<NextResponse>(
     (
       resolve: (value: NextResponse) => void,
       reject: (reason?: any) => void

@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import CommandLink from "./commandLink";
+import ErrorComponent from "./Error";
 
 export interface CommandsData {
   [key: string]: {
@@ -82,13 +83,22 @@ const Help: React.FC<HelpProps> = ({
   helpForCommand = "",
 }: HelpProps): JSX.Element => {
   if (helpForCommand) {
-    return (
-      <HelpCommand
-        command={helpForCommand}
-        desc={commands[helpForCommand].desc}
-        details={commands[helpForCommand].details}
-      />
-    );
+    if (helpForCommand in commands) {
+      return (
+        <HelpCommand
+          command={helpForCommand}
+          desc={commands[helpForCommand].desc}
+          details={commands[helpForCommand].details}
+        />
+      );
+    } else {
+      return (
+        <ErrorComponent
+          msg="Invalid argument"
+          errors={[`\`${helpForCommand}\` is not a valid command`]}
+        />
+      );
+    }
   }
   return (
     <div>

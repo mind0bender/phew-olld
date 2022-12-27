@@ -1,18 +1,28 @@
-type ResponseData = {
-  data?: object;
+export type ResponseData<DataType> = {
+  data?: DataType;
   errors?: string[];
   msg: string;
 };
 
-class Response {
-  data: object;
-  errors: string[] | undefined;
-  msg: string;
-  constructor({ data, errors, msg }: ResponseData) {
-    this.data = data || {};
-    this.errors = errors || [];
-    this.msg = msg;
-  }
+export interface ResponseObj<T> {
+  data: ResponseData<T>;
+  status: number;
 }
 
-export default Response;
+const responseObj: <DataType>({
+  msg,
+  data,
+  errors,
+}: ResponseData<DataType>) => ResponseData<DataType> = <DataType>({
+  data,
+  errors,
+  msg,
+}: ResponseData<DataType>): ResponseData<DataType> => {
+  return {
+    data: data,
+    errors: errors || [],
+    msg: msg,
+  };
+};
+
+export default responseObj;

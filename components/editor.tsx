@@ -45,7 +45,7 @@ const Editor: FC<EditorInterface> = ({
     setCode(e.target.value);
   };
 
-  const onSelect: () => void = (): void => {
+  const onSelect: (e: any) => void = (e: any): void => {
     setEditorData(
       (ped: EditorData): EditorData => ({
         ...ped,
@@ -76,20 +76,18 @@ const Editor: FC<EditorInterface> = ({
           {content ? (
             <span className="flex">
               <span className="px-2 bg-primary border-r border-secondary-800 sticky left-0">
-                {content
-                  .split("\n")
-                  .map((line: string, lineIdx: number): JSX.Element => {
-                    return (
-                      <div
-                        className="text-end flex whitespace-nowrap text-secondary-400"
-                        key={lineIdx}
-                      >
-                        {lineIdx + 1}
-                      </div>
-                    );
-                  })}
+                {content.split("\n").map((_, lineIdx: number): JSX.Element => {
+                  return (
+                    <div
+                      className="text-end flex whitespace-nowrap text-secondary-400"
+                      key={lineIdx}
+                    >
+                      {lineIdx + 1}
+                    </div>
+                  );
+                })}
               </span>
-              <span className="px-1">
+              <span className="px-1 w-full">
                 {content
                   .split("\n")
                   .map((line: string, lineIdx: number): JSX.Element => {
@@ -186,10 +184,15 @@ const Editor: FC<EditorInterface> = ({
               </span>
             </span>
           ) : (
-            <>
-              <span className="ring-1 ring-theme-400" />
-              <span className="text-secondary-500">{placeholder}</span>
-            </>
+            <span className="flex">
+              <span className="px-2 bg-primary border-r border-secondary-800 sticky left-0 text-end flex whitespace-nowrap text-secondary-400">
+                1
+              </span>
+              <span className="px-2">
+                <span className="ring-1 ring-theme-400" />
+                <span className="text-secondary-500">{placeholder}</span>
+              </span>
+            </span>
           )}
         </div>
         <span

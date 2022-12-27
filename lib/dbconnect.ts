@@ -15,7 +15,7 @@ let cached: {
 const dbConnect: () => Promise<typeof mongoose> = (): Promise<
   typeof mongoose
 > => {
-  return new Promise(
+  return new Promise<typeof mongoose>(
     (
       resolve: (value: typeof mongoose) => void,
       reject: (reason?: any) => void
@@ -28,7 +28,7 @@ const dbConnect: () => Promise<typeof mongoose> = (): Promise<
         cached.promise = mongoose.connect(MONGODB_URI);
         cached.promise
           .then((conn: typeof mongoose): void => {
-            console.log("	connected to database");
+            console.log("    database connection stablished");
             cached.conn = conn;
             resolve(conn);
           })

@@ -8,7 +8,7 @@ import { verify } from "./jwt";
 const { isEmpty } = validator;
 
 export default function handler(token: string): Promise<void> {
-  return new Promise(
+  return new Promise<void>(
     (resolve: (value?: any) => void, reject: (reason?: any) => void): void => {
       dbConnect()
         .then((): void => {

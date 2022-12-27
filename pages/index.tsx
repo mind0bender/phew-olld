@@ -254,13 +254,13 @@ const Home: NextPage<HomeProps> = ({
         </Head>
         <div className="flex flex-col w-full h-screen p-2 bg-primary font-extralight font-mono">
           <div className="flex justify-between rounded-t-lg">
-            <div className="bg-secondary-900 select-none text-white px-10 py-1 border-t-2 border-x-2 rounded-t-lg border-secondary-700">
+            <div className="bg-secondary-900 select-none text-white px-10 py-1 border-t-2 border-x-2 rounded-t-lg border-theme-400">
               some-random-process
             </div>
-            <div className="grow border-secondary-700 border-b-2" />
+            <div className="grow border-theme-400 border-b-2" />
             <button
               title="not yet pink"
-              className="border-b-2 px-2  hover:bg-red-600 border-secondary-700 text-white text-2xl aspect-square rounded-tr-lg duration-150"
+              className="border-b-2 px-2  hover:bg-red-600 border-theme-400 text-white text-2xl aspect-square rounded-tr-lg duration-150"
               onClick={(): void => {
                 // pink; toggling editor for now
                 setIsEditorWindow((iew: boolean): boolean => !iew);
@@ -269,7 +269,7 @@ const Home: NextPage<HomeProps> = ({
               x
             </button>
           </div>
-          <div className="grow cursor-text bg-secondary-900 h-[calc(100vh-3.5rem)] scrollbar rounded-b-lg p-1 border-x-2 border-b-2 border-secondary-700">
+          <div className="grow cursor-text bg-secondary-900 h-[calc(100vh-3.5rem)] scrollbar rounded-b-lg p-1 border-x-2 border-b-2 border-theme-400">
             {/* cli tab */}
             <label
               htmlFor="cmdinp"
@@ -277,7 +277,7 @@ const Home: NextPage<HomeProps> = ({
                 isEditorWindow && "hidden"
               }`}
             >
-              <div className="w-full border border-secondary-700 overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-md bg-primary text-white px-2">
+              <div className="w-full border border-theme-400 overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-md bg-primary text-white px-2">
                 <input
                   id="cmdinp"
                   ref={cmdInp}

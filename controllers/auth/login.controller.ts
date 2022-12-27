@@ -1,31 +1,36 @@
 import { isObjectIdOrHexString, ObjectId } from "mongoose";
 import user, { UserInterface } from "../../database/models/user";
-import Response from "../../helpers/response";
-import { shareableUser } from "../../helpers/shareableModel";
+import { ShareableUser, shareableUser } from "../../helpers/shareableModel";
 import dbConnect from "../../lib/dbconnect";
 import validator from "validator";
 import { sign } from "../../lib/jwt";
+import responseObj, { ResponseData, ResponseObj } from "../../helpers/response";
 const { isEmpty } = validator;
 
-export interface loginControllerData {
+export interface LoginControllerData {
   _id?: string;
   username?: string;
   password?: string;
 }
 
-const login: ({ _id, username, password }: loginControllerData) => Promise<{
-  data: Response;
-  status: number;
-}> = ({
+export interface LoginData {
+  user: ShareableUser;
+  token: string;
+}
+
+export type LoginResponse = ResponseObj<LoginData>;
+
+const login: ({
   _id,
   username,
   password,
-}: loginControllerData): Promise<{
-  data: Response;
-  status: number;
-}> => {
-  return new Promise(
-    (resolve: (value: { data: Response; status: number }) => void): void => {
+}: LoginControllerData) => Promise<LoginResponse> = ({
+  _id,
+  username,
+  password,
+}: LoginControllerData): Promise<LoginResponse> => {
+  return new Promise<LoginResponse>(
+    (resolve: (value: LoginResponse) => void): void => {
       dbConnect()
         .then((): void => {
           if (isObjectIdOrHexString(_id)) {
@@ -36,7 +41,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                   sign(userDoc._id)
                     .then((token: string): void => {
                       return resolve({
-                        data: new Response({
+                        data: responseObj<LoginData>({
                           data: {
                             user: shareableUser(userDoc),
                             token,
@@ -48,7 +53,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                     })
                     .catch((): void => {
                       return resolve({
-                        data: new Response({
+                        data: responseObj({
                           errors: ["There was a problem"],
                           msg: "There was a problem",
                         }),
@@ -57,7 +62,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                     });
                 } else {
                   return resolve({
-                    data: new Response({
+                    data: responseObj({
                       errors: ["User not found"],
                       msg: "There was a problem",
                     }),
@@ -67,7 +72,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
               })
               .catch((): void => {
                 return resolve({
-                  data: new Response({
+                  data: responseObj({
                     errors: ["Problem finding user"],
                     msg: "There was a problem",
                   }),
@@ -84,7 +89,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
 
             if (errs.length) {
               return resolve({
-                data: new Response({
+                data: responseObj({
                   errors: errs,
                   msg: "Invalid Credentials:",
                 }),
@@ -108,7 +113,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
 
               if (errs.length) {
                 return resolve({
-                  data: new Response({
+                  data: responseObj({
                     msg: "Invalid Credentials:",
                     errors: errs,
                   }),
@@ -120,7 +125,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                   .then((doc: { _id: ObjectId } | null): void => {
                     if (!doc) {
                       return resolve({
-                        data: new Response({
+                        data: responseObj({
                           msg: "User not found",
                           errors: ["User not found"],
                         }),
@@ -135,7 +140,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                             .then((isMatched: boolean): void => {
                               if (!isMatched) {
                                 return resolve({
-                                  data: new Response({
+                                  data: responseObj({
                                     errors: ["Incorrect password"],
                                     msg: "Incorrect password",
                                   }),
@@ -145,7 +150,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                                 sign(userDoc._id)
                                   .then((token: string): void => {
                                     return resolve({
-                                      data: new Response({
+                                      data: responseObj({
                                         data: {
                                           user: shareableUser(userDoc),
                                           token,
@@ -157,7 +162,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                                   })
                                   .catch((): void => {
                                     return resolve({
-                                      data: new Response({
+                                      data: responseObj({
                                         errors: ["There was a problem"],
                                         msg: "There was a problem",
                                       }),
@@ -168,7 +173,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                             })
                             .catch((err: Error): void => {
                               return resolve({
-                                data: new Response({
+                                data: responseObj({
                                   errors: ["There was a problem"],
                                   msg: "There was a problem",
                                 }),
@@ -178,7 +183,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                         })
                         .catch((err: Error): void => {
                           return resolve({
-                            data: new Response({
+                            data: responseObj({
                               errors: ["There was a problem"],
                               msg: "There was a problem",
                             }),
@@ -189,7 +194,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
                   })
                   .catch((err: Error): void => {
                     return resolve({
-                      data: new Response({
+                      data: responseObj({
                         errors: ["There was a problem"],
                         msg: "There was a problem",
                       }),
@@ -202,7 +207,7 @@ const login: ({ _id, username, password }: loginControllerData) => Promise<{
         })
         .catch((err: Error): void => {
           return resolve({
-            data: new Response({
+            data: responseObj({
               errors: ["There was a problem"],
               msg: "There was a problem",
             }),

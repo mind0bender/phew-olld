@@ -1,7 +1,6 @@
 import { Document, model, models, Schema } from "mongoose";
 import { compare, genSalt, hash } from "bcrypt";
-
-const SALT_WORK_FACTOR = 10;
+import { SALT_WORK_FACTOR } from "../../constants";
 
 export interface UserInterface extends Document {
   username: string;
@@ -39,7 +38,7 @@ User.pre("save", function (next) {
 
     hash(user.password, salt, function (err, hash) {
       if (err) return next(err);
-      // override the cleartext password with the hashed one
+      // overwrite the cleartext password with the hashed one
       user.password = hash;
       next();
     });
