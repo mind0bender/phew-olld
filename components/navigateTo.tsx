@@ -7,11 +7,11 @@ interface NavigateToProps {
 
 const NavigateTo: FC<NavigateToProps> = ({ to }: NavigateToProps) => {
   const router: NextRouter = useRouter();
-  useEffect(() => {
+  useEffect((): (() => void) => {
     router.push(to);
 
-    return () => {};
-  }, []);
+    return (): void => {};
+  });
 
   return <></>;
 };

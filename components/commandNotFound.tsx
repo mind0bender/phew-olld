@@ -10,10 +10,8 @@ const CommandNotFound: FC<CommandNotFoundData> = ({
 }: CommandNotFoundData): JSX.Element => {
   return (
     <ErrorComponent
-      data={{
-        msg: "Try `help` to get started",
-        errors: [`${command.split(" ")[0]}: command not found`],
-      }}
+      msg={"Try `help` to get started"}
+      errors={[`${command.split(" ")[0]}: command not found`]}
     />
   );
 };
