@@ -1,11 +1,5 @@
-import {
-  FC,
-  HTMLAttributes,
-  PropsWithChildren,
-  ReactNode,
-  useContext,
-} from "react";
-import { CommandContext } from "../pages";
+import { FC, HTMLAttributes, useContext } from "react";
+import { CommandContext } from "../pages/_app";
 
 interface CommandLinkProps extends HTMLAttributes<HTMLSpanElement> {
   command: string;
@@ -23,21 +17,15 @@ const CommandLink: FC<CommandLinkProps> = ({
   return (
     <span
       {...props}
+      onClick={(): void => {
+        if (setCommand && setCaretPosition) {
+          setCommand(command);
+          setCaretPosition(command.length);
+        }
+      }}
       className={`hover:bg-secondary-800 hover:ring ring-secondary-700 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100 ${props.className}`}
     >
-      [
-      <span
-        onClick={(): void => {
-          if (setCommand && setCaretPosition) {
-            setCommand(command);
-            setCaretPosition(command.length);
-          }
-        }}
-        className="text-amber-300 underline "
-      >
-        {children}
-      </span>
-      ]
+      [<span className="text-amber-300 underline ">{children}</span>]
     </span>
   );
 };

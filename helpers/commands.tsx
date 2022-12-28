@@ -104,7 +104,6 @@ const runCommand: (command: string) => Promise<ReactNode> = (
               src={"https://shattereddisk.github.io/rickroll/rickroll.mp4"}
               title={"This should be a good lesson"}
               autoPlay
-              autoFullscreen
             />
           );
         default:

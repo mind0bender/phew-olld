@@ -1,10 +1,18 @@
-import { useRef, FC, MutableRefObject, useEffect, useState } from "react";
+import {
+  useRef,
+  FC,
+  MutableRefObject,
+  useEffect,
+  useState,
+  HTMLAttributes,
+} from "react";
 
-interface VideoPlayerProps {
+interface VideoPlayerProps extends HTMLAttributes<HTMLVideoElement> {
   src: string;
   title?: string;
   autoPlay?: boolean;
   autoFullscreen?: boolean;
+  muted?: boolean;
 }
 
 const VideoPlayer: FC<VideoPlayerProps> = ({
@@ -12,6 +20,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
   title,
   autoPlay = false,
   autoFullscreen = false,
+  muted = false,
 }: VideoPlayerProps): JSX.Element => {
   const vdo: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);
@@ -52,6 +61,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
           onTimeUpdate={onProgress}
           className="w-full rounded-md"
           autoPlay={autoPlay}
+          muted={muted}
         >
           <source src={src} />
         </video>

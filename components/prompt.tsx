@@ -1,5 +1,5 @@
 import { FC, MutableRefObject, useContext, useRef } from "react";
-import { UserContext } from "../pages";
+import { UserContext } from "../pages/_app";
 
 interface PropmtProps {
   path: string;

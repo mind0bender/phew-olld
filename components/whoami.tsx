@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { ShareableUser } from "../helpers/shareableModel";
-import { defaultUser, UserContext, UserType } from "../pages";
+import { defaultUser, UserContext, UserType } from "../pages/_app";
 import CommandLink from "./commandLink";
 
 interface WhoAmIProps {
