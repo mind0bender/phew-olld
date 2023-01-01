@@ -9,6 +9,8 @@ import {
   SetStateAction,
   useState,
 } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import muiTheme from "../helpers/muiTheme";
 
 export type UserType = [ShareableUser, Dispatch<SetStateAction<ShareableUser>>];
 
@@ -39,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [command, setCommand] = useState<string>("");
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [user, setUser] = useState<ShareableUser>(defaultUser);
-  // pink; initUser in layout
+
   return (
     <CookiesProvider>
       <CommandContext.Provider
@@ -49,7 +51,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       >
         <UserContext.Provider value={[user, setUser]}>
-          <Component {...pageProps} />
+          <ThemeProvider theme={muiTheme}>
+            <Component {...pageProps} />
+          </ThemeProvider>
         </UserContext.Provider>
       </CommandContext.Provider>
     </CookiesProvider>

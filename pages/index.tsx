@@ -243,10 +243,13 @@ const Home: NextPage<HomeProps> = ({
           {/* cli tab */}
           <label
             htmlFor="cmdinp"
-            className={`flex group h-full w-full ${isEditorWindow && "hidden"}`}
+            className={`flex h-full w-full ${isEditorWindow && "hidden"}`}
           >
             <div className="w-full border border-theme-400 overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-md bg-primary text-white px-2">
               <input
+                autoCapitalize={"false"}
+                autoComplete={"false"}
+                autoCorrect={"false"}
                 id="cmdinp"
                 ref={cmdInp}
                 onKeyUpCapture={keyUpCaptureHandler}
@@ -279,8 +282,6 @@ const Home: NextPage<HomeProps> = ({
                 <CommandWithCaret isFocused={isFocused} ref={caret} />
               </div>
               {isProcessing && <Processing />}
-              {/* pink; editor testing */}
-              {/* <Editor initCode="// write your code here" /> */}
             </div>
           </label>
           {/* cli ends */}

@@ -198,7 +198,7 @@ const Editor: FC<EditorInterface> = ({
         <span
           className="
            opacity-0
-          flex divide-x-2 pl-3 pt-0.5 peer w-full bg-black text-pink-300 h-full absolute top-0 left-0 scrollbar outline-none"
+          flex divide-x-2 pl-3 pt-0.5 peer w-full h-full absolute top-0 left-0 scrollbar outline-none"
         >
           <span className="pr-2 flex">{content.split("\n").length}</span>
           <textarea
@@ -213,7 +213,9 @@ const Editor: FC<EditorInterface> = ({
           />
         </span>
       </div>
-      <div className="hidden lg:block w-full h-full bg-pink-900"></div>
+      <div className="hidden lg:block w-full h-full bg-pink-900">
+        the preview side
+      </div>
     </div>
   ) : null;
 };

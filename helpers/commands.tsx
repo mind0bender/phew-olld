@@ -100,11 +100,13 @@ const runCommand: (command: string) => Promise<ReactNode> = (
           break;
         case "getcool":
           resolve(
-            <VideoPlayer
-              src={"https://shattereddisk.github.io/rickroll/rickroll.mp4"}
-              title={"This should be a good lesson"}
-              autoPlay
-            />
+            <Output>
+              <VideoPlayer
+                src={"https://shattereddisk.github.io/rickroll/rickroll.mp4"}
+                title={"This should be a good lesson"}
+                autoPlay
+              />
+            </Output>
           );
         default:
           resolve(

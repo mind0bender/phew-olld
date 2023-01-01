@@ -35,14 +35,14 @@ const Processing: FC = (): JSX.Element => {
 
   return (
     <Output>
-      <div className="max-w-fit">
+      <div className="w-fit">
         <div>Your request is being processed</div>
-        <div className="flex justify-between">
+        <div className="flex gap-2 justify-between">
           <div className="whitespace-pre">{frames[frame % frames.length]}</div>
           <div
             className={`${
               (frame * 150) / 1000 > 120 ? "text-red-500" : "text-green-500"
-            }`}
+            } whitespace-nowrap`}
           >
             {Math.floor((frame * 150) / 1000)}s
           </div>
