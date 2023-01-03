@@ -1,14 +1,7 @@
 import {
-  FullscreenRounded,
-  VolumeOffRounded,
-  VolumeUpRounded,
-} from "@mui/icons-material";
-import { Slider, IconButton, Tooltip } from "@mui/material";
-import {
   useRef,
   FC,
   MutableRefObject,
-  useEffect,
   useState,
   HTMLAttributes,
   ReactNode,
@@ -22,6 +15,13 @@ import {
 } from "react-full-screen";
 import secondsToTime from "../helpers/secondsToTime";
 import Processing from "./processing";
+import {
+  BiFullscreen,
+  BiExitFullscreen,
+  BiVolumeFull,
+  BiVolumeMute,
+} from "react-icons/bi";
+import Slider from "./slider";
 
 interface VideoPlayerProps extends HTMLAttributes<HTMLVideoElement> {
   src: string;
@@ -68,10 +68,11 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     setCanPlay(true);
   };
 
-  const onVolumeChangeHandler: (_e: Event, value: number | number[]) => void = (
-    _e: Event,
-    value: number | number[]
+  const onVolumeChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
+    e: React.ChangeEvent<HTMLInputElement>
   ): void => {
+    const value: number = parseInt(e.target.value);
+    console.log(value);
     if (typeof value == "number" && value >= 0 && value <= 100) {
       setVolume(value);
       if (vdo.current) {
@@ -92,16 +93,12 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     [fullScreenHandler, isFullScreen]
   );
 
-  const onSeekVideo: (_e: Event, value: number | number[]) => void = (
-    _e: Event,
-    value: number | number[]
+  const onSeekVideo: React.ChangeEventHandler<HTMLInputElement> = (
+    e: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    if (
-      typeof value == "number" &&
-      value >= 0 &&
-      vdo.current?.duration &&
-      value <= vdo.current?.duration
-    ) {
+    const value: number = parseInt(e.target.value);
+    console.log(value);
+    if (value >= 0 && vdo.current?.duration && value <= vdo.current?.duration) {
       if (vdo.current) {
         setProgress(value);
         vdo.current.currentTime = value;
@@ -111,7 +108,9 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
 
   return (
     <FullScreen
-      className={`flex justify-center items-center ${isFullScreen && "px-1"}`}
+      className={`flex justify-center items-center ${
+        isFullScreen ? "px-1" : "max-w-md"
+      }`}
       handle={fullScreenHandler}
     >
       <div className="w-full group ring-2 duration-200 ring-theme-400 rounded-md p-0.5">
@@ -149,61 +148,56 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
           </div>
           <div className="absolute shadow-sm w-fit z-10 py-1 px-4 rounded-lg scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 left-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200">
             <div className="w-12 flex items-center justify-center">
-              <Tooltip placement="top" title={`volume: ${volume}%`}>
+              <div title={`volume: ${volume}%`}>
                 <Slider
-                  aria-label="volume slider"
-                  size="small"
-                  color="secondary"
                   value={isMuted ? 0 : volume}
                   onChange={onVolumeChangeHandler}
                 />
-              </Tooltip>
+              </div>
             </div>
-            <Tooltip placement="top" title={isMuted ? "unmute" : "mute"}>
-              <IconButton
-                size="small"
+            <div title={isMuted ? "unmute" : "mute"}>
+              <div
                 aria-label={isMuted ? "unmute" : "mute"}
-                color="secondary"
                 onClick={(): void =>
                   setisMuted((pIM: boolean): boolean => !pIM)
                 }
               >
-                {isMuted ? <VolumeOffRounded /> : <VolumeUpRounded />}
-              </IconButton>
-            </Tooltip>
+                {isMuted ? (
+                  <BiVolumeMute className="text-xl md:text-3xl cursor-pointer" />
+                ) : (
+                  <BiVolumeFull className="text-xl md:text-3xl cursor-pointer" />
+                )}
+              </div>
+            </div>
           </div>
-          <div className="absolute shadow-sm w-fit z-10 p-1 rounded-lg scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200">
-            <Tooltip
-              title={isFullScreen ? "exit fullscreen" : "enter fullscreen"}
-            >
-              <IconButton
-                size="small"
-                aria-label="fullscreen"
-                color="secondary"
-                onClick={(): void => toggleFullscreenHandler()}
-              >
-                {<FullscreenRounded />}
-              </IconButton>
-            </Tooltip>
+          <div
+            onClick={(): void => toggleFullscreenHandler()}
+            className="absolute cursor-pointer shadow-sm w-fit z-10 p-1 rounded-lg scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200"
+          >
+            <div title={isFullScreen ? "exit fullscreen" : "enter fullscreen"}>
+              <div aria-label="fullscreen">
+                {isFullScreen ? (
+                  <BiExitFullscreen className="text-xl md:text-3xl" />
+                ) : (
+                  <BiFullscreen className="text-xl md:text-3xl" />
+                )}
+              </div>
+            </div>
           </div>
-          <div className="w-full flex justify-center items-center opacity-0  group-hover:opacity-100 group-hover:bg-gradient-to-t from-secondary-900 to-transparent px-4 py-1 absolute bottom-0 rounded-b-md left-0 duration-200">
-            <Tooltip
-              placement="top"
-              title={
-                <time>
-                  {secondsToTime(progress)} /{" "}
-                  {secondsToTime(vdo.current?.duration || 0)}
-                </time>
-              }
+          <div className="w-full flex justify-center items-center opacity-100  group-hover:opacity-100 group-hover:bg-gradient-to-t from-secondary-900 to-transparent px-4 py-1 absolute bottom-0 rounded-b-md left-0 duration-200">
+            <div
+              className="w-full"
+              title={`${secondsToTime(progress)} / ${secondsToTime(
+                vdo.current?.duration || 0
+              )}`}
             >
               <Slider
+                name="progress seeker"
                 onChange={onSeekVideo}
                 max={vdo.current?.duration}
-                min={0}
-                size="medium"
                 value={progress}
               />
-            </Tooltip>
+            </div>
           </div>
         </div>
       </div>

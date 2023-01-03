@@ -9,8 +9,6 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import muiTheme from "../helpers/muiTheme";
 
 export type UserType = [ShareableUser, Dispatch<SetStateAction<ShareableUser>>];
 
@@ -51,9 +49,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
       >
         <UserContext.Provider value={[user, setUser]}>
-          <ThemeProvider theme={muiTheme}>
-            <Component {...pageProps} />
-          </ThemeProvider>
+          <Component {...pageProps} />
         </UserContext.Provider>
       </CommandContext.Provider>
     </CookiesProvider>

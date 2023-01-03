@@ -1,0 +1,19 @@
+.slider[type="range"] {
+  -webkit-appearance: none;
+  @apply w-full h-1.5 rounded-full bg-transparent;
+}
+
+.slider[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply h-4 w-4 ring-4 ring-theme-500 ring-opacity-50 rounded-full bg-theme-400 cursor-pointer;
+}
+
+/* All the same stuff for Firefox */
+.slider[type="range"]::-moz-range-thumb {
+  @apply h-4 w-4 ring-4 ring-theme-500 ring-opacity-50 rounded-full bg-theme-400 cursor-pointer;
+}
+
+/* All the same stuff for IE */
+.slider[type="range"]::-ms-thumb {
+  @apply h-4 w-4 ring-4 ring-theme-500 ring-opacity-50 rounded-full bg-theme-400 cursor-pointer;
+}
