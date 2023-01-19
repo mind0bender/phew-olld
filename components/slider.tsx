@@ -18,9 +18,9 @@ const Slider: FC<SliderProps> = ({
 }: SliderProps): JSX.Element => {
   return (
     <div className="relative w-full flex justify-center items-center">
-      <div className="absolute w-full h-1.5 rounded-full bg-theme-100">
+      <div className="absolute w-full h-1.5 rounded-sm bg-theme-100">
         <div
-          className="bg-theme-400 h-full rounded-l-full"
+          className="bg-theme-400 h-full rounded-l-sm"
           style={{
             width: `calc(${(value / (max - min)) * 100}%)`,
           }}

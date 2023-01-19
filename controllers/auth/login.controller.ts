@@ -54,7 +54,7 @@ const login: ({
                     .catch((): void => {
                       return resolve({
                         data: responseObj({
-                          errors: ["There was a problem"],
+                          errors: ["Can not save session data"],
                           msg: "There was a problem",
                         }),
                         status: 500,
@@ -163,7 +163,7 @@ const login: ({
                                   .catch((): void => {
                                     return resolve({
                                       data: responseObj({
-                                        errors: ["There was a problem"],
+                                        errors: ["Can not save session"],
                                         msg: "There was a problem",
                                       }),
                                       status: 500,
@@ -174,7 +174,7 @@ const login: ({
                             .catch((err: Error): void => {
                               return resolve({
                                 data: responseObj({
-                                  errors: ["There was a problem"],
+                                  errors: ["Can not validate password"],
                                   msg: "There was a problem",
                                 }),
                                 status: 500,
@@ -184,7 +184,7 @@ const login: ({
                         .catch((err: Error): void => {
                           return resolve({
                             data: responseObj({
-                              errors: ["There was a problem"],
+                              errors: ["Problem finding user"],
                               msg: "There was a problem",
                             }),
                             status: 500,
@@ -195,7 +195,7 @@ const login: ({
                   .catch((err: Error): void => {
                     return resolve({
                       data: responseObj({
-                        errors: ["There was a problem"],
+                        errors: ["Can not validate user"],
                         msg: "There was a problem",
                       }),
                       status: 500,
@@ -208,7 +208,7 @@ const login: ({
         .catch((err: Error): void => {
           return resolve({
             data: responseObj({
-              errors: ["There was a problem"],
+              errors: ["There was a problem connecting to the database"],
               msg: "There was a problem",
             }),
             status: 500,

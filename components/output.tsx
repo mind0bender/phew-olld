@@ -7,7 +7,7 @@ interface OutputData {
 const Output: React.FC<OutputData> = ({
   children,
 }: OutputData): JSX.Element => {
-  return <div className="text-white py-2">{children}</div>;
+  return <div className="text-white cursor-default py-2">{children}</div>;
 };
 
 export default Output;

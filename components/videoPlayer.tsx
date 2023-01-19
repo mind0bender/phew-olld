@@ -72,7 +72,6 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const value: number = parseInt(e.target.value);
-    console.log(value);
     if (typeof value == "number" && value >= 0 && value <= 100) {
       setVolume(value);
       if (vdo.current) {
@@ -97,7 +96,6 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const value: number = parseInt(e.target.value);
-    console.log(value);
     if (value >= 0 && vdo.current?.duration && value <= vdo.current?.duration) {
       if (vdo.current) {
         setProgress(value);
@@ -111,9 +109,12 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
       className={`flex justify-center items-center ${
         isFullScreen ? "px-1" : "max-w-md"
       }`}
+      onChange={(state): void => {
+        setIsFullScreen(state);
+      }}
       handle={fullScreenHandler}
     >
-      <div className="w-full group ring-2 duration-200 ring-theme-400 rounded-md p-0.5">
+      <div className="w-full group ring-2 duration-200 ring-theme-400 rounded-sm p-0.5">
         <div
           className={`relative ${
             !isFullScreen && "group-hover:scale-[99%]"
@@ -121,12 +122,12 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
         >
           <div
             onClick={onClickHandler}
-            className="w-full flex justify-center items-center rounded-md relative hover:ring-1 ring-theme-400 bg-secondary-900"
+            className="w-full flex justify-center items-center rounded-sm relative hover:ring-1 ring-theme-400 bg-secondary-900"
           >
             <div
               className={`${
                 canPlay ? "hidden" : "block"
-              } w-full flex justify-center items-center rounded-md aspect-video object-cover`}
+              } w-full flex justify-center items-center rounded-sm aspect-video object-cover`}
             >
               {loader}
             </div>
@@ -136,17 +137,17 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
               onTimeUpdate={onProgressHandler}
               className={`${
                 canPlay ? "block" : "hidden"
-              } w-full rounded-md aspect-video object-cover`}
+              } w-full rounded-sm aspect-video object-cover`}
               autoPlay={autoPlay}
               muted={isMuted}
             >
               <source src={src} />
             </video>
           </div>
-          <div className="w-full absolute group-hover:flex hidden opacity-0 group-hover:opacity-100 top-0 text-center justify-center duration-200 bg-gradient-to-b rounded-t-md px-4 py-6 from-secondary-900 to-transparent">
+          <div className="w-full absolute group-hover:flex hidden opacity-0 group-hover:opacity-100 top-0 text-center justify-center duration-200 bg-gradient-to-b rounded-t-sm px-4 py-6 from-secondary-900 to-transparent">
             {title}
           </div>
-          <div className="absolute shadow-sm w-fit z-10 py-1 px-4 rounded-lg scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 left-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200">
+          <div className="absolute shadow-sm w-fit z-10 py-1 px-4 rounded-sm scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 left-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200">
             <div className="w-12 flex items-center justify-center">
               <div title={`volume: ${volume}%`}>
                 <Slider
@@ -172,7 +173,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
           </div>
           <div
             onClick={(): void => toggleFullscreenHandler()}
-            className="absolute cursor-pointer shadow-sm w-fit z-10 p-1 rounded-lg scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200"
+            className="absolute cursor-pointer shadow-sm w-fit z-10 p-1 rounded-sm scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200"
           >
             <div title={isFullScreen ? "exit fullscreen" : "enter fullscreen"}>
               <div aria-label="fullscreen">
@@ -184,7 +185,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
               </div>
             </div>
           </div>
-          <div className="w-full flex justify-center items-center opacity-100  group-hover:opacity-100 group-hover:bg-gradient-to-t from-secondary-900 to-transparent px-4 py-1 absolute bottom-0 rounded-b-md left-0 duration-200">
+          <div className="w-full flex justify-center items-center opacity-100  group-hover:opacity-100 group-hover:bg-gradient-to-t from-secondary-900 to-transparent px-4 py-4 absolute bottom-0 rounded-b-sm left-0 duration-200">
             <div
               className="w-full"
               title={`${secondsToTime(progress)} / ${secondsToTime(

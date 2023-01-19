@@ -36,7 +36,7 @@ usage-
   },
   getcool: {
     desc: "wanna be like the cool guys?",
-    details: ``,
+    details: `get to know about how to be like the cool guys [see the coolest phew]`,
   },
   signup: {
     desc: "create an account",
@@ -45,7 +45,7 @@ usage-
     user : \`username\` of the account,
     pswd : \`password\` of the account,
     email: \`email\` of the account,
-            
+
 usage-
     signup /<username>/<password>/<email>
     or
@@ -57,19 +57,33 @@ usage-
 
     user : \`username\` of the account,
     pswd : \`password\` of the account,
-            
+
 usage-
     login /<username>/<password>
     or
     login /?user=<username>&pswd=<password>`,
   },
   ls: {
-    desc: "list all collections and phews",
-    details: ``,
+    desc: "list all directory and phews",
+    details: `print the list of all directory and phews in the specified directory
+
+    path : the path of the directory,
+
+usage-
+    ls /<path>
+    ls /?path=<path>
+    `,
   },
   clear: {
     desc: "clear the phew",
-    details: ``,
+    details: `clear the output screen
+
+usage-
+    clear`,
+  },
+  editor: {
+    desc: "edit the phew",
+    details: `open the phew editor to edit the phew contents`,
   },
 };
 

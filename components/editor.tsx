@@ -148,7 +148,8 @@ const Editor: FC<EditorInterface> = ({
                                       editorData.selection[1] ? (
                                       <span
                                         className={`${
-                                          char == " " && "text-secondary-900"
+                                          char == " " &&
+                                          "text-secondary-900 text-opacity-75"
                                         }`}
                                       >
                                         {char != " " ? char : "·"}

@@ -19,10 +19,10 @@
     @apply bg-secondary-700;
   }
   .scrollbar::-webkit-scrollbar-corner {
-    @apply bg-secondary-900 rounded-br;
+    @apply bg-secondary-900;
   }
   *::selection {
-    @apply bg-theme-400 bg-opacity-40 rounded-md text-white;
+    @apply bg-theme-400 bg-opacity-40 text-white;
   }
 }
 

@@ -23,7 +23,7 @@ const CommandLink: FC<CommandLinkProps> = ({
           setCaretPosition(command.length);
         }
       }}
-      className={`hover:bg-secondary-800 hover:ring ring-secondary-700 cursor-pointer rounded-sm px-0.5 py-0.5 duration-100 ${props.className}`}
+      className={`hover:bg-secondary-800 hover:ring ring-secondary-700 cursor-pointer px-0.5 py-0.5 duration-100 ${props.className}`}
     >
       [<span className="text-amber-300 underline ">{children}</span>]
     </span>

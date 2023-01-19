@@ -35,10 +35,19 @@ export const defaultCommand: CommandType = {
 export const CommandContext: Context<CommandType> =
   createContext<CommandType>(defaultCommand);
 
+export type EditorContextType = [
+  editorWindowOpen: boolean,
+  setEditorWindowOpen: Dispatch<SetStateAction<boolean>>
+];
+
+export const EditorContext: Context<EditorContextType> =
+  createContext<EditorContextType>([false, (): void => {}]);
+
 function MyApp({ Component, pageProps }: AppProps) {
   const [command, setCommand] = useState<string>("");
   const [caretPosition, setCaretPosition] = useState<number>(0);
   const [user, setUser] = useState<ShareableUser>(defaultUser);
+  const [editorWindowOpen, setEditorWindowOpen] = useState<boolean>(false);
 
   return (
     <CookiesProvider>
@@ -48,9 +57,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           caretPosition: [caretPosition, setCaretPosition],
         }}
       >
-        <UserContext.Provider value={[user, setUser]}>
-          <Component {...pageProps} />
-        </UserContext.Provider>
+        <EditorContext.Provider value={[editorWindowOpen, setEditorWindowOpen]}>
+          <UserContext.Provider value={[user, setUser]}>
+            <Component {...pageProps} />
+          </UserContext.Provider>
+        </EditorContext.Provider>
       </CommandContext.Provider>
     </CookiesProvider>
   );
