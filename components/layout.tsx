@@ -11,7 +11,7 @@ const Layout: FC<LayoutProps> = ({
   title,
 }: LayoutProps): JSX.Element => {
   return (
-    <>
+    <div className="h-full overflow-hidden">
       <Head>
         <title>{title}</title>
         <link
@@ -40,7 +40,7 @@ const Layout: FC<LayoutProps> = ({
         <meta name="msapplication-TileColor" content="#ffc40d" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      <div className="flex flex-col w-full h-screen p-2 bg-primary font-extralight font-mono">
+      <div className="flex flex-col w-full h-full p-2 bg-primary font-extralight font-mono">
         <div className="flex justify-between">
           <div className="bg-secondary-900 select-none text-white px-10 py-1 border-t-2 border-x-2 border-theme-400">
             some-random-process
@@ -60,7 +60,7 @@ const Layout: FC<LayoutProps> = ({
           {children}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
