@@ -229,26 +229,9 @@ const Home: NextPage<HomeProps> = ({
       {/* cli tab */}
       <label
         htmlFor="cmdinp"
-        className={`flex h-full w-full ${editorWindowOpen && "hidden"}`}
+        className={`h-full w-full ${editorWindowOpen && "hidden"}`}
       >
-        <div className="w-full border border-theme-400 overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-sm bg-primary text-white px-2">
-          <input
-            autoCapitalize={"false"}
-            autoComplete={"false"}
-            autoCorrect={"false"}
-            id="cmdinp"
-            ref={cmdInp}
-            onKeyUpCapture={keyUpCaptureHandler}
-            onKeyDown={keyDownHandler}
-            onFocus={focusChangeHandler}
-            onBlur={focusChangeHandler}
-            className="scale-0 absolute"
-            type="text"
-            // aria-autocomplete="none"
-            // pink;
-            value={command}
-            onChange={onChangeHandler}
-          />
+        <div className="h-full">
           <div className="flex flex-col gap-1">
             {output.map((line: ReactNode, idx: number) => {
               return (
@@ -267,7 +250,26 @@ const Home: NextPage<HomeProps> = ({
             }`}}`}
           >
             <Prompt path={path} whenCalledUser={false} />
-            <CommandWithCaret isFocused={isFocused} ref={caret} />
+            <div className="relative">
+              <input
+                autoCapitalize={"false"}
+                autoComplete={"false"}
+                autoCorrect={"false"}
+                id="cmdinp"
+                ref={cmdInp}
+                onKeyUpCapture={keyUpCaptureHandler}
+                onKeyDown={keyDownHandler}
+                onFocus={focusChangeHandler}
+                onBlur={focusChangeHandler}
+                className="w-2 scale-0 absolute"
+                type="text"
+                // aria-autocomplete="none"
+                // pink;
+                value={command}
+                onChange={onChangeHandler}
+              />
+              <CommandWithCaret isFocused={isFocused} ref={caret} />
+            </div>
           </div>
           {isProcessing && <Processing />}
         </div>

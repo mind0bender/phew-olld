@@ -63,7 +63,11 @@ const Layout: FC<LayoutProps> = ({
         <div className="flex">
           <div className="px-[0.75px] bg-gradient-to-b from-theme-400 via-primary to-primary" />
           <div className="grow h-[calc(100vh-3.5rem)] scrollbar p-1">
-            {children}
+            <div className="w-full h-full grow rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
+              <div className="w-full overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-sm bg-primary text-white p-2">
+                {children}
+              </div>
+            </div>
           </div>
         </div>
       </div>
