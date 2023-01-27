@@ -244,6 +244,8 @@ const Home: NextPage<HomeProps> = ({
             onBlur={focusChangeHandler}
             className="scale-0 absolute"
             type="text"
+            // aria-autocomplete="none"
+            // pink;
             value={command}
             onChange={onChangeHandler}
           />
