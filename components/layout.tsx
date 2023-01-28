@@ -11,7 +11,7 @@ const Layout: FC<LayoutProps> = ({
   title,
 }: LayoutProps): JSX.Element => {
   return (
-    <div className="h-full overflow-hidden">
+    <div className="h-full w-full">
       <Head>
         <title>{title}</title>
         <link
@@ -41,7 +41,7 @@ const Layout: FC<LayoutProps> = ({
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <div className="flex flex-col w-full h-full p-2 bg-primary font-extralight font-mono">
-        <div className="flex justify-between">
+        <div className="flex justify-between h-[2rem]">
           <div className="bg-secondary-900 relative select-none text-white px-10 py-1 border-t-2 border-x-2 border-theme-400">
             <span className="absolute -top-0.5 -left-0.5 border-l-theme-400 border-b-transparent border-l-[16px] border-b-[16px]" />
             <span className="absolute -top-0.5 -left-0.5 border-l-primary border-b-transparent border-l-[0.75rem] border-b-[0.75rem]" />
@@ -54,17 +54,17 @@ const Layout: FC<LayoutProps> = ({
             title="not yet pink"
             className="px-2  hover:bg-red-600 text-white text-2xl aspect-square duration-150"
             onClick={(): void => {
-              // pink; does nothing
+              // pink; does nothing yet
             }}
           >
             x
           </button>
         </div>
-        <div className="flex">
+        <div className="flex h-[calc(100%-2rem)] grow">
           <div className="px-[0.75px] bg-gradient-to-b from-theme-400 via-primary to-primary" />
-          <div className="grow h-[calc(100vh-3.5rem)] scrollbar p-1">
-            <div className="w-full h-full grow rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
-              <div className="w-full overflow-y-auto break-all h-full grow whitespace-pre-wrap scrollbar rounded-sm bg-primary text-white p-2">
+          <div className="grow h-full scrollbar p-1">
+            <div className="w-full h-full rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
+              <div className="w-full h-full overflow-y-auto break-all whitespace-pre-wrap scrollbar rounded-sm bg-primary text-white p-2">
                 {children}
               </div>
             </div>

@@ -1,6 +1,4 @@
-import { ObjectId } from "mongoose";
-import type { NextApiRequest, NextApiResponse, NextPage } from "next";
-import Head from "next/head";
+import type { NextApiRequest, NextPage } from "next";
 import {
   ChangeEvent,
   ChangeEventHandler,
@@ -99,6 +97,9 @@ const Home: NextPage<HomeProps> = ({
   }, []);
 
   useEffect((): (() => void) => {
+    const caretRect: DOMRect | undefined =
+      caret.current?.getBoundingClientRect();
+    console.log(+"LOL", caretRect && caretRect.y + caretRect.height);
     caret.current?.scrollIntoView({
       behavior: "smooth",
     });
@@ -252,7 +253,7 @@ const Home: NextPage<HomeProps> = ({
             <Prompt path={path} whenCalledUser={false} />
             <div className="relative">
               <input
-                autoCapitalize={"false"}
+                autoCapitalize={"none"}
                 autoComplete={"false"}
                 autoCorrect={"false"}
                 id="cmdinp"
@@ -263,8 +264,6 @@ const Home: NextPage<HomeProps> = ({
                 onBlur={focusChangeHandler}
                 className="w-2 scale-0 absolute"
                 type="text"
-                // aria-autocomplete="none"
-                // pink;
                 value={command}
                 onChange={onChangeHandler}
               />
@@ -272,6 +271,8 @@ const Home: NextPage<HomeProps> = ({
             </div>
           </div>
           {isProcessing && <Processing />}
+          {/* this div is used for giving the extra blank space*/}
+          <div className="h-1/2 w-full" />
         </div>
       </label>
       {/* cli ends */}
