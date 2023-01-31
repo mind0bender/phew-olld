@@ -1,19 +1,15 @@
 import Head from "next/head";
-import { FC, ReactNode } from "react";
+import { FC, HTMLAttributes } from "react";
 
-interface LayoutProps {
+interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
-  children: ReactNode;
 }
 
-const Layout: FC<LayoutProps> = ({
-  children,
-  title,
-}: LayoutProps): JSX.Element => {
+const Layout: FC<LayoutProps> = (props: LayoutProps): JSX.Element => {
   return (
     <div className="h-full w-full">
       <Head>
-        <title>{title}</title>
+        <title>{props.title}</title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -60,12 +56,16 @@ const Layout: FC<LayoutProps> = ({
             x
           </button>
         </div>
-        <div className="flex h-[calc(100%-2rem)] grow">
+        <div className="flex h-[calc(100%-2rem)] grow shadow-2xl shadow-theme-900">
           <div className="px-[0.75px] bg-gradient-to-b from-theme-400 via-primary to-primary" />
           <div className="grow h-full scrollbar p-1">
             <div className="w-full h-full rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
-              <div className="w-full h-full overflow-y-auto break-all whitespace-pre-wrap scrollbar rounded-sm bg-primary text-white p-2">
-                {children}
+              <div
+                {...props}
+                title={undefined}
+                className="w-full h-full overflow-y-auto break-all whitespace-pre-wrap scrollbar rounded-sm bg-gradient-to-br via-primary from-[#000000dd] to-[#000000dd] text-white p-2"
+              >
+                {props.children}
               </div>
             </div>
           </div>

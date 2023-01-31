@@ -29,7 +29,7 @@ const Slider: FC<SliderProps> = ({
       <input
         type="range"
         onChange={onChange}
-        className={`${styles.slider} z-10`}
+        className={`${styles.slider} outline-none z-10`}
         name={name}
         min={min}
         max={max}

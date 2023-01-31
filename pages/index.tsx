@@ -70,6 +70,8 @@ const Home: NextPage<HomeProps> = ({
   const [editorWindowOpen, setEditorWindowOpen] =
     useContext<EditorContextType>(EditorContext);
 
+  const cancel: MutableRefObject<() => void> = useRef((): void => {});
+
   useEffect((): (() => void) => {
     if (token) {
       setCookies("jwt", token);
@@ -99,7 +101,7 @@ const Home: NextPage<HomeProps> = ({
   useEffect((): (() => void) => {
     const caretRect: DOMRect | undefined =
       caret.current?.getBoundingClientRect();
-    console.log(+"LOL", caretRect && caretRect.y + caretRect.height);
+    // pink; adjust the scroll
     caret.current?.scrollIntoView({
       behavior: "smooth",
     });
@@ -114,6 +116,11 @@ const Home: NextPage<HomeProps> = ({
     }
     return (): void => {};
   }, [prevCommandsIdx, prevCommands, setCommand]);
+
+  useEffect((): (() => void) => {
+    isProcessing || cmdInp.current?.focus(); // for restoring focus lost due to processing animation
+    return (): void => {};
+  }, [isProcessing]);
 
   const addPromptToOutput: (path: string, username: string) => void = (
     path: string
@@ -145,7 +152,7 @@ const Home: NextPage<HomeProps> = ({
     if (e.key === "Enter") {
       addPromptToOutput(path, user.username);
       setIsProcessing(true);
-      runCommand(command, editorWindowOpen)
+      runCommand(command, editorWindowOpen, cancel)
         .then(
           ({
             component,
@@ -183,9 +190,13 @@ const Home: NextPage<HomeProps> = ({
         });
       return;
     }
-    if ((e.ctrlKey && e.key === "l") || (e.key === "L" && !e.shiftKey)) {
+    if (!e.shiftKey && ((e.ctrlKey && e.key === "l") || e.key === "L")) {
       e.preventDefault();
       setOutput([]);
+    }
+    if (!e.shiftKey && ((e.ctrlKey && e.key === "c") || e.key === "C")) {
+      e.preventDefault();
+      cancel.current();
     }
     if (e.key === "ArrowUp") {
       e.preventDefault();
@@ -225,6 +236,20 @@ const Home: NextPage<HomeProps> = ({
     setCommand(e.target.value);
   };
 
+  useEffect(() => {
+    const onLayoutKeyDown = (e: any): void => {
+      if (!e.shiftKey && ((e.ctrlKey && e.key === "c") || e.key === "C")) {
+        e.preventDefault();
+        cancel.current();
+      }
+    };
+    window.addEventListener("keydown", onLayoutKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onLayoutKeyDown);
+    };
+  }, []);
+
   return (
     <Layout title="PHEW">
       {/* cli tab */}
@@ -246,7 +271,7 @@ const Home: NextPage<HomeProps> = ({
             })}
           </div>
           <div
-            className={`flex gap-2 max-h-fit items-baseline ${`${
+            className={`flex py-1 gap-2 max-h-fit items-baseline ${`${
               isProcessing ? "invisible absolute" : "block"
             }`}}`}
           >

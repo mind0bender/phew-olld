@@ -1,28 +1,29 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, MutableRefObject } from "react";
 import Banner from "../components/banner";
 import CommandNotFound from "../components/commandNotFound";
 import Help from "../components/help";
 import Signup, { onSignup } from "../components/signup";
 import parseCommand, { ParsedCommand, parsedForLogin } from "./commandparser";
 import { ShareableUser } from "./shareableModel";
-import ErrorComponent, { ErrorData } from "../components/Error";
+import { ErrorData } from "../components/Error";
 import Login, { LoginData, onLogin } from "../components/login";
 import WhoAmI from "../components/whoami";
 import VideoPlayer from "../components/videoPlayer";
-import { EditorContext } from "../pages/_app";
-
 export interface RunCommandResolved {
   component?: ReactNode;
   clear?: boolean;
+  canceled?: boolean;
   editorWindowOpen?: boolean;
 }
 
 const runCommand: (
   command: string,
-  editorWindowOpen: boolean
+  editorWindowOpen: boolean,
+  cancel: MutableRefObject<() => void>
 ) => Promise<RunCommandResolved> = (
   command: string,
-  currentEditorWindowOpen: boolean
+  currentEditorWindowOpen: boolean,
+  cancel: MutableRefObject<() => void>
 ): Promise<RunCommandResolved> => {
   const cmd: string = command.trim();
   return new Promise<RunCommandResolved>(
@@ -30,13 +31,21 @@ const runCommand: (
       resolve: ({
         component,
         clear = false,
+        canceled = false,
         editorWindowOpen = currentEditorWindowOpen,
       }: RunCommandResolved) => void,
       reject: (err?: ErrorData) => void
     ): void => {
+      cancel.current = (): void => {
+        reject({
+          msg: "AbortError",
+          errors: ["The operation was canceled by the user"],
+        });
+      };
       const parsedCommand: ParsedCommand = parseCommand(cmd);
       switch (parsedCommand.command) {
         case "":
+          resolve({});
           break;
         case "clear":
           resolve({

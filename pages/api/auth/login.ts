@@ -21,7 +21,9 @@ const loginHandler: (
             req.body;
           login({ _id, username, password }).then(
             ({ data, status }: LoginResponse): void => {
-              res.status(status).send(data);
+              setTimeout(() => {
+                res.status(status).send(data);
+              }, 3000);
             }
           );
           break;

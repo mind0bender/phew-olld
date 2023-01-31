@@ -1,4 +1,6 @@
-1. removed `autoCapitalize` for mobile devices.
-2. added a div for giving the `outputs` some distance from the bottom.
-3. better layout and fixed some bugs that occurred on mobile.
-4. added `changelog.md` for displaying the changes in a better way.
+<h2><u><strong>Changelogs</strong></u></h2>
+
+1. added: `cancel` `ref Function` to cancel the runCommand when Ctrl+C is pressed.
+1. updated `Error` component.
+1. fixed: empty command causes infinite wait.
+1. fixed: focus lost due to the `Processing` animation.
