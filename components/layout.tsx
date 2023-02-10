@@ -58,12 +58,12 @@ const Layout: FC<LayoutProps> = (props: LayoutProps): JSX.Element => {
         </div>
         <div className="flex h-[calc(100%-2rem)] grow shadow-2xl shadow-theme-900">
           <div className="px-[0.75px] bg-gradient-to-b from-theme-400 via-primary to-primary" />
-          <div className="grow h-full scrollbar p-1">
+          <div className="grow h-full p-1">
             <div className="w-full h-full rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
               <div
                 {...props}
                 title={undefined}
-                className="w-full h-full overflow-y-auto break-all whitespace-pre-wrap scrollbar rounded-sm bg-gradient-to-br via-primary from-[#000000dd] to-[#000000dd] text-white p-2"
+                className="flex justify-center items-center w-full h-full overflow-y-auto break-all whitespace-pre-wrap scrollbar rounded-sm bg-gradient-to-br via-primary from-[#000000dd] to-[#000000dd] text-white p-2"
               >
                 {props.children}
               </div>
