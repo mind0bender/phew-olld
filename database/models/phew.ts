@@ -11,17 +11,16 @@ import {
 import { SALT_WORK_FACTOR } from "../../constants";
 
 export interface PhewInterface extends Document {
-  username: ObjectId;
+  user: ObjectId;
   password: string;
   content: string;
   updatedAt: Date;
   createdAt: Date;
-  sharedWith: RefType[];
   isPublic: boolean;
 }
 
 const phew: Schema<PhewInterface> = new Schema<PhewInterface>({
-  username: {
+  user: {
     required: true,
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -46,19 +45,15 @@ const phew: Schema<PhewInterface> = new Schema<PhewInterface>({
     type: Boolean,
     default: false,
   },
-  sharedWith: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
 });
 
 phew.pre("save", function (next) {
   let phew: PhewInterface = this;
 
-  // only hash the password if it has been modified (or is new)
-  if (!phew.password || !phew.isModified("password")) return next();
+  // only hash the password if (it has been modified or is new) and (not empty)
+  if (!phew.password || !phew.isModified("password")) {
+    return next();
+  }
 
   genSalt(SALT_WORK_FACTOR, (err: Error | undefined, salt: string): void => {
     if (err) return next(err);
@@ -77,6 +72,6 @@ phew.methods.validatePassword = function (
   return compare(candidatePassword, this.password);
 };
 
-const Phew = models.phew || model<PhewInterface>("Phew", phew);
+const Phew: Model<any, {}, {}, {}, any> = models.Phew || model("phew", phew);
 
 export default Phew;

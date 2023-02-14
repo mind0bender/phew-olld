@@ -28,7 +28,7 @@ const ErrorComponent: FC<ErrorData> = ({
         },
       }}
     >
-      <div className="border-l-4 cursor-default px-2 border-error-900 hover:border-error-700 hover:bg-secondary-800 py-2">
+      <div className="border-l-4 px-2 border-error-900 hover:border-error-700 hover:bg-secondary-800 py-2">
         <div className="text-lg font-bold">Error: {msg}</div>
         <div className="pl-6">
           {errors ? (

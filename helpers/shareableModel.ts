@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 import { PhewInterface } from "../database/models/phew";
-import user, { UserInterface } from "../database/models/user";
+import User, { UserInterface } from "../database/models/user";
 
 export interface ShareableUser {
   username: string;
@@ -19,46 +19,30 @@ export const shareableUser: (user: UserInterface) => ShareableUser = (
 
 export interface ShareablePhew {
   content: string;
-  sharedWith: ObjectId[];
   isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
-  username: ObjectId;
+  user: ShareableUser;
 }
 
 export const shareablePhew: (phew: PhewInterface) => Promise<ShareablePhew> = (
   phew: PhewInterface
 ): Promise<ShareablePhew> => {
-  const {
-    content,
-    sharedWith,
-    isPublic,
-    createdAt,
-    updatedAt,
-    username,
-  }: PhewInterface = phew;
+  const { content, isPublic, createdAt, updatedAt, user }: PhewInterface = phew;
 
   return new Promise<ShareablePhew>(
     (
       resolve: (value: ShareablePhew) => void,
       reject: (reasons?: any) => void
     ): void => {
-      user
-        .find({
-          _id: {
-            $in: sharedWith,
-          },
-        })
-        .then((sharedWithUsers: UserInterface[]): void => {
+      User.findById(user)
+        .then((userDoc: UserInterface): void => {
           resolve({
             content,
-            sharedWith: sharedWithUsers.map(
-              ({ _id }: UserInterface): ObjectId => _id
-            ),
             isPublic,
             createdAt,
             updatedAt,
-            username,
+            user: userDoc,
           });
         })
         .catch(reject);

@@ -4,7 +4,7 @@ import {
   ForwardRefExoticComponent,
   useContext,
 } from "react";
-import { CommandContext } from "../pages/_app";
+import { CommandContext } from "./contextProvider";
 
 interface CommandWithCaretProps extends React.ComponentPropsWithRef<"span"> {
   isFocused: boolean;

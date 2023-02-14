@@ -1,4 +1,4 @@
-import { Document, model, models, Schema } from "mongoose";
+import { Document, Model, model, models, Schema } from "mongoose";
 import { compare, genSalt, hash } from "bcrypt";
 import { SALT_WORK_FACTOR } from "../../constants";
 
@@ -10,7 +10,7 @@ export interface UserInterface extends Document {
   validatePassword: (pswd: string) => Promise<boolean>;
 }
 
-const User: Schema<UserInterface> = new Schema<UserInterface>({
+const user: Schema<UserInterface> = new Schema<UserInterface>({
   username: {
     type: String,
     required: true,
@@ -27,7 +27,7 @@ const User: Schema<UserInterface> = new Schema<UserInterface>({
   },
 });
 
-User.pre("save", function (next) {
+user.pre("save", function (next) {
   let user: UserInterface = this;
 
   // only hash the password if it has been modified (or is new)
@@ -45,10 +45,11 @@ User.pre("save", function (next) {
   });
 });
 
-User.methods.validatePassword = function (
+user.methods.validatePassword = function (
   candidatePassword: string
 ): Promise<boolean> {
   return compare(candidatePassword, this.password);
 };
 
-export default models.User || model("User", User);
+const User: Model<any, {}, {}, {}, any> = models.User || model("User", user);
+export default User;

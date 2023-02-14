@@ -1,0 +1,6 @@
+.preview {
+  @apply px-4 py-1 prose-blockquote:text-white prose-a:text-indigo-500 prose w-full prose-base scrollbar prose-p:m-0 h-full overflow-auto;
+}
+.preview * {
+  @apply text-white m-0;
+}

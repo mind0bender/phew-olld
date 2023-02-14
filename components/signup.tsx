@@ -3,7 +3,7 @@ import React, { FC, useContext, useEffect } from "react";
 import { ParsedCommand, parsedForSignup } from "../helpers/commandparser";
 import validator from "validator";
 import { useCookies } from "react-cookie";
-import { UserContext, UserType } from "../pages/_app";
+import { UserContext, UserType } from "./contextProvider";
 import WhoAmI from "./whoami";
 import { UserAndToken } from "./login";
 import { ResponseData } from "../helpers/response";

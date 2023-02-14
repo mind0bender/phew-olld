@@ -4,7 +4,7 @@ import { verify } from "./jwt";
 import { ObjectId } from "mongoose";
 import login from "../controllers/auth/login.controller";
 import { NextApiRequest } from "next";
-import { defaultUser } from "../pages/_app";
+import { defaultUser } from "../components/contextProvider";
 
 const { isEmpty } = validator;
 

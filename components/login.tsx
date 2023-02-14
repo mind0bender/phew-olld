@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import Response, { ResponseData } from "../helpers/response";
 import { useContext, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { UserContext, UserType } from "../pages/_app";
+import { UserContext, UserType } from "./contextProvider";
 import WhoAmI from "./whoami";
 import { ErrorData } from "./Error";
 

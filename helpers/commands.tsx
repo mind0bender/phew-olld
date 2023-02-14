@@ -9,6 +9,7 @@ import { ErrorData } from "../components/Error";
 import Login, { LoginData, onLogin } from "../components/login";
 import WhoAmI from "../components/whoami";
 import VideoPlayer from "../components/videoPlayer";
+import Logout from "../components/logout";
 export interface RunCommandResolved {
   component?: ReactNode;
   clear?: boolean;
@@ -101,10 +102,12 @@ const runCommand: (
               }
             )
             .catch((errorData: ErrorData): void => {
-              console.log(errorData);
+              console.error(errorData);
               reject(errorData);
             });
           break;
+        case "logout":
+          resolve({ component: <Logout /> });
         case "getcool":
           resolve({
             component: (

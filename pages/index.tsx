@@ -20,15 +20,6 @@ import { Prompt } from "../components/prompt";
 import runCommand, { RunCommandResolved } from "../helpers/commands";
 import { ShareableUser } from "../helpers/shareableModel";
 import CommandWithCaret from "../components/commandWithCaret";
-import Editor from "../components/editor";
-import {
-  CommandContext,
-  CommandType,
-  EditorContext,
-  EditorContextType,
-  UserContext,
-  UserType,
-} from "./_app";
 import loginServerSide, {
   defaultLoginData,
   LoginSSInterface,
@@ -36,6 +27,15 @@ import loginServerSide, {
 import Layout from "../components/layout";
 import Output from "../components/output";
 import ErrorComponent from "../components/Error";
+import MonacoEditor from "../components/monacoEditor";
+import {
+  CommandContext,
+  CommandType,
+  EditorContext,
+  EditorContextType,
+  UserContext,
+  UserType,
+} from "../components/contextProvider";
 
 interface HomeProps {
   initUser: ShareableUser;
@@ -46,7 +46,14 @@ const Home: NextPage<HomeProps> = ({
   initUser,
   token,
 }: HomeProps): JSX.Element => {
-  const [user, setUser] = useContext<UserType>(UserContext);
+  const [_appUser, set_AppUser] = useContext<UserType>(UserContext);
+  const [user, setUser] = useState<ShareableUser>(initUser);
+
+  useEffect((): (() => void) => {
+    set_AppUser(user); // update the _appUser context with the initial user
+    return (): void => {};
+  }, [user, set_AppUser]);
+
   const {
     command: [command, setCommand],
     caretPosition: [, setCaretPosition],
@@ -80,12 +87,6 @@ const Home: NextPage<HomeProps> = ({
   }, [token, setCookies]);
 
   useEffect((): (() => void) => {
-    setUser(initUser);
-    return (): void => {};
-  }, [setUser, initUser]);
-
-  useEffect((): (() => void) => {
-    setIsFocused(document.hasFocus());
     cmdInp.current?.focus();
     setIsFocused(document.hasFocus());
     const onblur: () => void = (): void => {
@@ -99,12 +100,16 @@ const Home: NextPage<HomeProps> = ({
   }, []);
 
   useEffect((): (() => void) => {
-    const caretRect: DOMRect | undefined =
-      caret.current?.getBoundingClientRect();
-    // pink; adjust the scroll
-    caret.current?.scrollIntoView({
-      behavior: "smooth",
-    });
+    const caretRect: DOMRect = caret.current!.getBoundingClientRect();
+    const scrollView: HTMLElement | null | undefined =
+      caret.current?.parentElement?.parentElement?.parentElement?.parentElement
+        ?.parentElement;
+    const scrollRect: DOMRect = scrollView!.getBoundingClientRect();
+    if (caretRect.bottom > scrollRect.bottom) {
+      caret.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
     return (): void => {};
   }, [output, command]);
 
@@ -236,8 +241,11 @@ const Home: NextPage<HomeProps> = ({
     setCommand(e.target.value);
   };
 
-  useEffect(() => {
-    const onLayoutKeyDown = (e: any): void => {
+  useEffect((): (() => void) => {
+    const onLayoutKeyDown: (
+      this: Window,
+      e: globalThis.KeyboardEvent
+    ) => any = (e: globalThis.KeyboardEvent): void => {
       if (!e.shiftKey && ((e.ctrlKey && e.key === "c") || e.key === "C")) {
         e.preventDefault();
         cancel.current();
@@ -251,62 +259,64 @@ const Home: NextPage<HomeProps> = ({
   }, []);
 
   return (
-    <Layout title="PHEW">
-      {/* cli tab */}
-      <label
-        htmlFor="cmdinp"
-        className={`h-full w-full ${editorWindowOpen && "hidden"}`}
-      >
-        <div className="h-full">
-          <div className="flex flex-col gap-1">
-            {output.map((line: ReactNode, idx: number) => {
-              return (
-                <div
-                  className="text-gray-200 whitespace-pre-wrap break-all themed-selection"
-                  key={idx}
-                >
-                  {line}
-                </div>
-              );
-            })}
-          </div>
-          <div
-            className={`flex py-1 gap-2 max-h-fit items-baseline ${`${
-              isProcessing ? "invisible absolute" : "block"
-            }`}}`}
-          >
-            <Prompt path={path} whenCalledUser={false} />
-            <div className="relative">
-              <input
-                autoCapitalize={"none"}
-                autoComplete={"false"}
-                autoCorrect={"false"}
-                id="cmdinp"
-                ref={cmdInp}
-                onKeyUpCapture={keyUpCaptureHandler}
-                onKeyDown={keyDownHandler}
-                onFocus={focusChangeHandler}
-                onBlur={focusChangeHandler}
-                className="w-2 scale-0 absolute"
-                type="text"
-                value={command}
-                onChange={onChangeHandler}
-              />
-              <CommandWithCaret isFocused={isFocused} ref={caret} />
+    <UserContext.Provider value={[user, setUser]}>
+      <Layout title="PHEW">
+        {/* cli tab */}
+        <label
+          htmlFor="cmdinp"
+          className={`h-full w-full ${editorWindowOpen && "hidden"}`}
+        >
+          <div className="h-full">
+            <div className="flex flex-col gap-1">
+              {output.map((line: ReactNode, idx: number) => {
+                return (
+                  <div
+                    className="text-gray-200 whitespace-pre-wrap break-all themed-selection"
+                    key={idx}
+                  >
+                    {line}
+                  </div>
+                );
+              })}
             </div>
+            <div
+              className={`flex py-1 gap-2 max-h-fit items-baseline ${`${
+                isProcessing ? "invisible absolute" : "block"
+              }`}}`}
+            >
+              <Prompt path={path} whenCalledUser={false} />
+              <div className="relative">
+                <input
+                  autoCapitalize={"none"}
+                  autoComplete={"false"}
+                  autoCorrect={"false"}
+                  id="cmdinp"
+                  ref={cmdInp}
+                  onKeyUpCapture={keyUpCaptureHandler}
+                  onKeyDown={keyDownHandler}
+                  onFocus={focusChangeHandler}
+                  onBlur={focusChangeHandler}
+                  className="w-2 scale-0 absolute"
+                  type="text"
+                  value={command}
+                  onChange={onChangeHandler}
+                />
+                <CommandWithCaret isFocused={isFocused} ref={caret} />
+              </div>
+            </div>
+            {isProcessing && <Processing />}
+            {/* this div is used for giving the extra blank space*/}
+            <div className="h-1/2 w-full" />
           </div>
-          {isProcessing && <Processing />}
-          {/* this div is used for giving the extra blank space*/}
-          <div className="h-1/2 w-full" />
-        </div>
-      </label>
-      {/* cli ends */}
-      {/* editor component */}
-      <Editor
-        open={editorWindowOpen}
-        placeholder={"// start your phew here."}
-      />
-    </Layout>
+        </label>
+        {/* cli ends */}
+        {/* editor component */}
+        <MonacoEditor
+          open={editorWindowOpen}
+          placeholder={"// start your phew here."}
+        />
+      </Layout>
+    </UserContext.Provider>
   );
 };
 
@@ -322,6 +332,7 @@ export function getServerSideProps({ req }: { req: NextApiRequest }): Promise<{
     ): void => {
       loginServerSide(req)
         .then((loginData: LoginSSInterface): void => {
+          console.log("          lololololololo----____;;;;::::", loginData);
           resolve({
             props: loginData,
           });

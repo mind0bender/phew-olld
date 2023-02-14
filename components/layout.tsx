@@ -1,15 +1,25 @@
 import Head from "next/head";
-import { FC, HTMLAttributes } from "react";
+import { FC, HTMLAttributes, useContext } from "react";
+import { ShareableUser } from "../helpers/shareableModel";
+import { UserContext } from "./contextProvider";
 
 interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
+  initUser?: ShareableUser;
 }
 
-const Layout: FC<LayoutProps> = (props: LayoutProps): JSX.Element => {
+const Layout: FC<LayoutProps> = ({
+  title,
+  initUser,
+  ...props
+}: LayoutProps): JSX.Element => {
+  const [user] = useContext(UserContext);
   return (
     <div className="h-full w-full">
       <Head>
-        <title>{props.title}</title>
+        <title>
+          {title} {user.username}
+        </title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -58,7 +68,7 @@ const Layout: FC<LayoutProps> = (props: LayoutProps): JSX.Element => {
         </div>
         <div className="flex h-[calc(100%-2rem)] grow shadow-2xl shadow-theme-900">
           <div className="px-[0.75px] bg-gradient-to-b from-theme-400 via-primary to-primary" />
-          <div className="grow h-full p-1">
+          <div className="grow h-full w-full p-1">
             <div className="w-full h-full rounded-sm bg-gradient-to-br from-theme-400 via-primary to-theme-400 p-0.5">
               <div
                 {...props}

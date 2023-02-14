@@ -1,5 +1,5 @@
 import { FC, HTMLAttributes, useContext } from "react";
-import { CommandContext } from "../pages/_app";
+import { CommandContext } from "./contextProvider";
 
 interface CommandLinkProps extends HTMLAttributes<HTMLSpanElement> {
   command: string;
