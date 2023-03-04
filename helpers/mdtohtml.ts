@@ -8,16 +8,14 @@ function mdToHtml(md: string): Promise<string> {
       resolve: (value: string) => void,
       reject: (reason?: any) => void
     ): void => {
-      const html = unified()
+      const html:Promise<void> = unified()
         .use(remarkParse)
         .use(remarkHtml)
         .process(md)
         .then((data): void => {
-          console.log(data.toString());
           resolve(data.toString());
         })
         .catch(reject);
-      console.log(String(html));
     }
   );
 }

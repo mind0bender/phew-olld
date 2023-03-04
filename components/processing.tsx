@@ -20,7 +20,17 @@ const frames: string[] = [
   "[  [][][][][][][-]",
 ];
 
-const Processing: FC = (): JSX.Element => {
+interface ProcessingProps {
+  fixed?: boolean;
+  msg?: string;
+  onUnmount?: () => void;
+}
+
+const Processing: FC<ProcessingProps> = ({
+  fixed = false,
+  msg = `Your request is being processed`,
+  onUnmount,
+}: ProcessingProps): JSX.Element => {
   const [frame, setframe] = useState<number>(0);
 
   useEffect((): (() => void) => {
@@ -30,20 +40,22 @@ const Processing: FC = (): JSX.Element => {
 
     return (): void => {
       clearInterval(interval);
+      if (onUnmount) {
+        onUnmount();
+      }
     };
-  }, []);
+  }, [onUnmount]);
 
   return (
     <Output>
-      <div className="w-fit">
-        <div>Your request is being processed</div>
+      <div className={`w-fit ${fixed && "fixed bottom-8 right-8"}`}>
+        <div>{msg}</div>
         <div className="flex gap-2 justify-between">
           <div className="whitespace-pre">{frames[frame % frames.length]}</div>
           <div
             className={`${
               (frame * 150) / 1000 > 120 ? "text-red-500" : "text-green-500"
-            } whitespace-nowrap`}
-          >
+            } whitespace-nowrap`}>
             {Math.floor((frame * 150) / 1000)}s
           </div>
         </div>

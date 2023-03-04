@@ -54,9 +54,8 @@ const runCommand: (
           });
           break;
         case "editor":
-          // pink; toggle editorWindowOpen
           resolve({
-            editorWindowOpen: !currentEditorWindowOpen,
+            editorWindowOpen: true,
           });
           break;
         case "whoami":

@@ -5,7 +5,7 @@ import Layout from "../components/layout";
 const Test: NextPage = (): JSX.Element => {
   return (
     <Layout title="PHEW">
-      <Link href="/">Home</Link>
+      <Link href="/">Test</Link>
     </Layout>
   );
 };

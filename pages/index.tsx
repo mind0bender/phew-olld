@@ -12,6 +12,8 @@ import {
   useRef,
   useState,
   useContext,
+  ComponentType,
+  useTransition,
 } from "react";
 import { useCookies } from "react-cookie";
 import Greeting from "../components/greeting";
@@ -27,7 +29,7 @@ import loginServerSide, {
 import Layout from "../components/layout";
 import Output from "../components/output";
 import ErrorComponent from "../components/Error";
-import MonacoEditor from "../components/monacoEditor";
+import { MonacoEditorProps } from "../components/monacoEditor";
 import {
   CommandContext,
   CommandType,
@@ -36,6 +38,15 @@ import {
   UserContext,
   UserType,
 } from "../components/contextProvider";
+import dynamic from "next/dynamic";
+
+const DynamicMonacoEditor: ComponentType<MonacoEditorProps> = dynamic(
+  () => import("../components/monacoEditor"),
+  {
+    loading: (): JSX.Element => <Processing fixed msg={`importing editor`} />,
+    ssr: false,
+  }
+);
 
 interface HomeProps {
   initUser: ShareableUser;
@@ -53,6 +64,8 @@ const Home: NextPage<HomeProps> = ({
     set_AppUser(user); // update the _appUser context with the initial user
     return (): void => {};
   }, [user, set_AppUser]);
+
+  const [isPendingTransition, startTransition] = useTransition();
 
   const {
     command: [command, setCommand],
@@ -76,6 +89,12 @@ const Home: NextPage<HomeProps> = ({
 
   const [editorWindowOpen, setEditorWindowOpen] =
     useContext<EditorContextType>(EditorContext);
+
+  const selectEditorWindowOpen = (open: boolean): void => {
+    startTransition(() => {
+      setEditorWindowOpen(!editorWindowOpen);
+    });
+  };
 
   const cancel: MutableRefObject<() => void> = useRef((): void => {});
 
@@ -177,7 +196,7 @@ const Home: NextPage<HomeProps> = ({
               newEditorWindowOpen !== undefined &&
               newEditorWindowOpen !== editorWindowOpen
             ) {
-              setEditorWindowOpen(newEditorWindowOpen);
+              selectEditorWindowOpen(newEditorWindowOpen);
             }
           }
         )
@@ -264,16 +283,14 @@ const Home: NextPage<HomeProps> = ({
         {/* cli tab */}
         <label
           htmlFor="cmdinp"
-          className={`h-full w-full ${editorWindowOpen && "hidden"}`}
-        >
-          <div className="h-full">
+          className={`h-full w-full ${editorWindowOpen && "hidden"}`}>
+          <div className="h-full w-full">
             <div className="flex flex-col gap-1">
               {output.map((line: ReactNode, idx: number) => {
                 return (
                   <div
                     className="text-gray-200 whitespace-pre-wrap break-all themed-selection"
-                    key={idx}
-                  >
+                    key={idx}>
                     {line}
                   </div>
                 );
@@ -282,8 +299,7 @@ const Home: NextPage<HomeProps> = ({
             <div
               className={`flex py-1 gap-2 max-h-fit items-baseline ${`${
                 isProcessing ? "invisible absolute" : "block"
-              }`}}`}
-            >
+              }`}}`}>
               <Prompt path={path} whenCalledUser={false} />
               <div className="relative">
                 <input
@@ -311,7 +327,14 @@ const Home: NextPage<HomeProps> = ({
         </label>
         {/* cli ends */}
         {/* editor component */}
-        <MonacoEditor
+        <DynamicMonacoEditor
+          onExit={(): void => {
+            setEditorWindowOpen(false);
+          }}
+          onSave={(mdContent: string): void => {
+            // save this on the db
+            console.log(mdContent)
+          }}
           open={editorWindowOpen}
           placeholder={"// start your phew here."}
         />
