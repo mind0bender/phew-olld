@@ -1,4 +1,5 @@
 const colors = require("tailwindcss/colors");
+const plugin = require("tailwindcss/plugin");
 const typography = require("@tailwindcss/typography");
 
 /** @type {import('tailwindcss').Config} */
@@ -26,5 +27,7 @@ module.exports = {
       },
     },
   },
-  plugins: [typography],
+  plugins: [typography, plugin(({addVariant})=>{
+    addVariant('mobile', "@media (pointer:coarse)")
+  })],
 };

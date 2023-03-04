@@ -321,8 +321,8 @@ const Home: NextPage<HomeProps> = ({
               </div>
             </div>
             {isProcessing && <Processing />}
-            {/* this div is used for giving the extra blank space*/}
-            <div className="h-1/2 w-full" />
+            {/* this div is used for giving the extra blank space after the output in mobile devices*/}
+            <div className="h-1/2 w-full hidden mobile:block" />
           </div>
         </label>
         {/* cli ends */}
@@ -333,7 +333,7 @@ const Home: NextPage<HomeProps> = ({
           }}
           onSave={(mdContent: string): void => {
             // save this on the db
-            console.log(mdContent)
+            console.log(mdContent);
           }}
           open={editorWindowOpen}
           placeholder={"// start your phew here."}
