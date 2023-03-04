@@ -1,47 +1,35 @@
 import React, {
   KeyboardEvent,
   KeyboardEventHandler,
+  memo,
+  NamedExoticComponent,
   useCallback,
-  useEffect,
-  useMemo,
   useState,
 } from "react";
-import Editor from "@monaco-editor/react";
+import Editor, { OnChange, OnMount } from "@monaco-editor/react";
 import { FC } from "react";
-import mdToHtml from "../helpers/mdtohtml";
+import MemoizedPreview from "./preview";
+import Processing from "./processing";
 
 export interface MonacoEditorProps {
-  open: boolean;
   placeholder: string;
   onExit?: () => void;
   onSave?: (mdContent: string) => void;
 }
 
 const MonacoEditor: FC<MonacoEditorProps> = ({
-  open,
   placeholder,
   onExit,
   onSave,
 }: MonacoEditorProps): JSX.Element => {
   const handleMount: (editor: any, monaco: any) => void = useCallback(
-    (editor: any, monaco: any): void => {
+    (_editor: any, _monaco: any): void => {
       console.log("editor mounted!");
     },
     []
   );
 
-  const [markDown, setMarkDown] = useState(placeholder);
-
-  const [htmlPreview, setHtmlPreview] = useState("");
-
-  useEffect((): (() => void) => {
-    mdToHtml(markDown)
-      .then((generatedHTML: string): void => {
-        setHtmlPreview(generatedHTML);
-      })
-      .catch(console.error);
-    return (): void => {};
-  }, [markDown]);
+  const [markdown, setMarkDown] = useState(placeholder);
 
   const changeHandler: (md: any) => void = useCallback((md: any): void => {
     setMarkDown(md);
@@ -55,45 +43,69 @@ const MonacoEditor: FC<MonacoEditorProps> = ({
           onExit();
         } else if (onSave && e.key.toLowerCase() == "s") {
           e.preventDefault();
-          onSave(markDown);
+          onSave(markdown);
         }
       }
     },
-    [onExit, onSave, markDown]
+    [onExit, onSave, markdown]
   );
 
   return (
     <div
       onKeyDown={keyDownHandler}
-      className={`${
-        open ? "" : "hidden"
-      } flex flex-col md:flex-row divide-y md:divide-y-0 divide-x-0 md:divide-x w-full h-full`}>
-      <div className="flex flex-col h-1/2 md:h-full w-full md:w-1/2">
-        <div className={`w-full grow`}>
-          <Editor
-            defaultLanguage="markdown"
-            defaultValue={placeholder}
-            className="w-full"
-            theme="hc-black"
-            onMount={handleMount}
+      className={`flex flex-col md:flex-row divide-y md:divide-y-0 divide-x-0 md:divide-x w-full h-full`}>
+      <div className="flex p-2 flex-col h-1/2 md:h-full w-full md:w-1/2">
+        <div className={`w-full h-full grow z-0 flex flex-col`}>
+          <MemoizedEditor
+            placeholder={placeholder}
             onChange={changeHandler}
+            onMount={handleMount}
           />
-        </div>
-        <div className={`flex divide-x w-full text-xs`}>
-          <span className={`px-2`}>exit: ^q</span>
-          <span className={`px-2`}>save: ^s</span>
+          <div className={`flex justify-end px-4 divide-x w-full text-xs`}>
+            <span onClick={onExit} className={`px-2`}>
+              exit: ^q
+            </span>
+            <span
+              onClick={(): void => {
+                onSave && onSave(markdown);
+              }}
+              className={`px-2`}>
+              save: ^s
+            </span>
+          </div>
         </div>
       </div>
-      <div
-        className={
-          `h-1/2 md:h-full md:w-1/2 ` +
-          `preview nochildmargin scrollable ` +
-          `prose-a:text-indigo-500 prose-blockquote:bg-slate-900 prose prose-blockquote:border-y-2 prose-blockquote:border-y-slate-800`
-        }
-        dangerouslySetInnerHTML={{ __html: htmlPreview }}
-      />
+      <div className={`h-1/2 md:h-full md:w-1/2`}>
+        <MemoizedPreview markdown={markdown} />
+      </div>
     </div>
   );
 };
+
+interface EditorProps {
+  placeholder?: string;
+  onMount?: OnMount;
+  onChange?: OnChange;
+}
+
+const MemoizedEditor: NamedExoticComponent<EditorProps> = memo(
+  function MonacoEditor({
+    placeholder,
+    onChange,
+    onMount,
+  }: EditorProps): JSX.Element {
+    return (
+      <Editor
+        loading={<Processing fixed msg={`importing editor`} />}
+        defaultLanguage="markdown"
+        defaultValue={placeholder}
+        className="w-full grow"
+        theme="hc-black"
+        onMount={onMount}
+        onChange={onChange}
+      />
+    );
+  }
+);
 
 export default MonacoEditor;

@@ -27,7 +27,7 @@ interface ProcessingProps {
 }
 
 const Processing: FC<ProcessingProps> = ({
-  fixed = false,
+  fixed = true,
   msg = `Your request is being processed`,
   onUnmount,
 }: ProcessingProps): JSX.Element => {

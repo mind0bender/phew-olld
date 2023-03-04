@@ -36,7 +36,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
   title,
   autoPlay = false,
   defaultVolume = 100,
-  loader = <Processing />,
+  loader = <Processing fixed={false} />,
 }: VideoPlayerProps): JSX.Element => {
   const vdo: MutableRefObject<HTMLVideoElement | null> =
     useRef<HTMLVideoElement | null>(null);
@@ -112,23 +112,19 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
       onChange={(state): void => {
         setIsFullScreen(state);
       }}
-      handle={fullScreenHandler}
-    >
+      handle={fullScreenHandler}>
       <div className="w-full group ring-2 duration-200 ring-theme-400 rounded-sm p-0.5">
         <div
           className={`relative ${
             !isFullScreen && "group-hover:scale-[99%]"
-          } duration-200`}
-        >
+          } duration-200`}>
           <div
             onClick={onClickHandler}
-            className="w-full flex justify-center items-center rounded-sm relative hover:ring-1 ring-theme-400 bg-secondary-900"
-          >
+            className="w-full flex justify-center items-center rounded-sm relative hover:ring-1 ring-theme-400 bg-secondary-900">
             <div
               className={`${
                 canPlay ? "hidden" : "block"
-              } w-full flex justify-center items-center rounded-sm aspect-video object-cover`}
-            >
+              } w-full flex justify-center items-center rounded-sm aspect-video object-cover`}>
               {loader}
             </div>
             <video
@@ -139,8 +135,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
                 canPlay ? "block" : "hidden"
               } w-full rounded-sm aspect-video object-cover`}
               autoPlay={autoPlay}
-              muted={isMuted}
-            >
+              muted={isMuted}>
               <source src={src} />
             </video>
           </div>
@@ -161,8 +156,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
                 aria-label={isMuted ? "unmute" : "mute"}
                 onClick={(): void =>
                   setisMuted((pIM: boolean): boolean => !pIM)
-                }
-              >
+                }>
                 {isMuted ? (
                   <BiVolumeMute className="text-xl md:text-3xl cursor-pointer" />
                 ) : (
@@ -173,8 +167,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
           </div>
           <div
             onClick={(): void => toggleFullscreenHandler()}
-            className="absolute cursor-pointer shadow-sm w-fit z-10 p-1 rounded-sm scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200"
-          >
+            className="absolute cursor-pointer shadow-sm w-fit z-10 p-1 rounded-sm scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 bottom-10 right-2 flex justify-center items-center gap-2 bg-secondary-800 ring-2 ring-secondary-900 ring-opacity-70 bg-opacity-70 duration-200">
             <div title={isFullScreen ? "exit fullscreen" : "enter fullscreen"}>
               <div aria-label="fullscreen">
                 {isFullScreen ? (
@@ -190,8 +183,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
               className="w-full"
               title={`${secondsToTime(progress)} / ${secondsToTime(
                 vdo.current?.duration || 0
-              )}`}
-            >
+              )}`}>
               <Slider
                 name="progress seeker"
                 onChange={onSeekVideo}

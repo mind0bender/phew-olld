@@ -13,7 +13,6 @@ import {
   useState,
   useContext,
   ComponentType,
-  useTransition,
 } from "react";
 import { useCookies } from "react-cookie";
 import Greeting from "../components/greeting";
@@ -43,7 +42,7 @@ import dynamic from "next/dynamic";
 const DynamicMonacoEditor: ComponentType<MonacoEditorProps> = dynamic(
   () => import("../components/monacoEditor"),
   {
-    loading: (): JSX.Element => <Processing fixed msg={`importing editor`} />,
+    loading: (): JSX.Element => <Processing msg={`importing editor`} />,
     ssr: false,
   }
 );
@@ -64,8 +63,6 @@ const Home: NextPage<HomeProps> = ({
     set_AppUser(user); // update the _appUser context with the initial user
     return (): void => {};
   }, [user, set_AppUser]);
-
-  const [isPendingTransition, startTransition] = useTransition();
 
   const {
     command: [command, setCommand],
@@ -89,12 +86,6 @@ const Home: NextPage<HomeProps> = ({
 
   const [editorWindowOpen, setEditorWindowOpen] =
     useContext<EditorContextType>(EditorContext);
-
-  const selectEditorWindowOpen = (open: boolean): void => {
-    startTransition(() => {
-      setEditorWindowOpen(!editorWindowOpen);
-    });
-  };
 
   const cancel: MutableRefObject<() => void> = useRef((): void => {});
 
@@ -196,7 +187,7 @@ const Home: NextPage<HomeProps> = ({
               newEditorWindowOpen !== undefined &&
               newEditorWindowOpen !== editorWindowOpen
             ) {
-              selectEditorWindowOpen(newEditorWindowOpen);
+              setEditorWindowOpen(newEditorWindowOpen);
             }
           }
         )
@@ -313,6 +304,7 @@ const Home: NextPage<HomeProps> = ({
                   onFocus={focusChangeHandler}
                   onBlur={focusChangeHandler}
                   className="w-2 scale-0 absolute"
+                  enterKeyHint={`done`}
                   type="text"
                   value={command}
                   onChange={onChangeHandler}
@@ -320,24 +312,25 @@ const Home: NextPage<HomeProps> = ({
                 <CommandWithCaret isFocused={isFocused} ref={caret} />
               </div>
             </div>
-            {isProcessing && <Processing />}
+            {isProcessing && <Processing fixed={false} />}
             {/* this div is used for giving the extra blank space after the output in mobile devices*/}
             <div className="h-1/2 w-full hidden mobile:block" />
           </div>
         </label>
         {/* cli ends */}
         {/* editor component */}
-        <DynamicMonacoEditor
-          onExit={(): void => {
-            setEditorWindowOpen(false);
-          }}
-          onSave={(mdContent: string): void => {
-            // save this on the db
-            console.log(mdContent);
-          }}
-          open={editorWindowOpen}
-          placeholder={"// start your phew here."}
-        />
+        {editorWindowOpen && (
+          <DynamicMonacoEditor
+            onExit={(): void => {
+              setEditorWindowOpen(false);
+            }}
+            onSave={(mdContent: string): void => {
+              // save this in the db
+              console.log(mdContent);
+            }}
+            placeholder={"// start your phew here."}
+          />
+        )}
       </Layout>
     </UserContext.Provider>
   );
