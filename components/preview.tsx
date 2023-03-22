@@ -22,8 +22,8 @@ const Preview: FC<PreviewProps> = ({ markdown }: PreviewProps): JSX.Element => {
   return (
     <div
       className={
-        `previ nochildmargin flex flex-col scrollable h-full w-full` +
-        `prose-a:text-indigo-500 prose-blockquote:bg-slate-900 prose prose-blockquote:border-y-2 prose-blockquote:border-y-slate-800`
+        `preview overflow-auto nochildmargin py-4 px-8 flex flex-col scrollable h-full w-full` +
+        `prose-a:text-indigo-500 prose-li:list-inside prose-blockquote:bg-slate-900 prose prose-blockquote:border-y-2 prose-blockquote:border-y-slate-800`
       }
       dangerouslySetInnerHTML={{ __html: HTMLPreview }}
     />

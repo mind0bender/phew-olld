@@ -102,6 +102,9 @@ const MemoizedEditor: NamedExoticComponent<EditorProps> = memo(
         className="w-full grow"
         theme="hc-black"
         onMount={onMount}
+        options={{
+          fontSize: "22px",
+        }}
         onChange={onChange}
       />
     );

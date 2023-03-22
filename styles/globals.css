@@ -34,10 +34,10 @@ body,
 
 @layer components {
   .preview {
-    @apply px-4 py-1 prose-blockquote:text-white prose-a:text-indigo-500 prose w-full prose-sm scrollbar prose-p:m-0 h-full overflow-auto max-w-full;
+    @apply prose-blockquote:text-white prose-a:text-indigo-500 prose w-full prose-sm scrollbar prose-p:m-0 h-full overflow-auto max-w-full;
   }
   .preview * {
-    @apply text-white m-0;
+    @apply text-white m-2 overflow-visible;
   }
   /* same scrollbar stuff as its is needed recursively in md */
   .preview > * ::-webkit-scrollbar {
